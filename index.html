@@ -71,9 +71,9 @@
     .job-picker.open .job-picker-caret { transform: rotate(180deg); }
     .job-picker-menu { display: none; position: absolute; z-index: 30; top: calc(100% + 5px); right: 0; min-width: 100%; width: 176px; padding: 6px; border: 1px solid #dce3d8; border-radius: 12px; background: #fff; box-shadow: 0 12px 28px rgba(32, 39, 31, .14); max-height: 310px; overflow-y: auto; }
     .job-picker.open .job-picker-menu { display: grid; gap: 2px; }
-    .job-picker-option { display: flex; align-items: center; gap: 8px; width: 100%; padding: 7px 9px; border: 0; border-radius: 8px; background: transparent; color: var(--ink); font-size: 13px; font-weight: 600; text-align: left; transition: background .12s; }
-    .job-picker-option:hover { background: #f2f6ef; }
-    .job-picker-option.selected { background: var(--green-soft); color: var(--green-dark); font-weight: 750; }
+    .job-picker-option { display: flex; align-items: center; gap: 8px; width: 100%; padding: 7px 9px; border: 0; border-left: 3px solid var(--job-accent, transparent); border-radius: 8px; background: transparent; color: var(--job-fg, var(--ink)); font-size: 13px; font-weight: 650; text-align: left; transition: background .12s; }
+    .job-picker-option:hover { background: var(--job-bg, #f2f6ef); }
+    .job-picker-option.selected { background: var(--job-bg, var(--green-soft)); color: var(--job-fg, var(--green-dark)); font-weight: 800; }
     .job-picker-option .job-icon { width: 21px; height: 21px; }
     .job-picker-option small { margin-left: auto; color: #8d9689; font-size: 11px; font-weight: 600; }
     .alt-list { display: grid; gap: 10px; }
@@ -93,6 +93,23 @@
     .roster-head { align-items: center; padding-bottom: 11px; }
     .count-pill { display: inline-flex; align-items: center; justify-content: center; min-width: 32px; height: 27px; padding: 0 9px; border-radius: 8px; background: #f0f2ee; color: #616a5e; font-size: 12px; font-weight: 800; }
     .roster-hint { margin: 0 18px 11px; padding: 9px 11px; border-radius: 9px; background: #f6f8f4; color: var(--muted); font-size: 12px; line-height: 1.5; }
+    .roster-filter { margin: 0 14px 12px; padding: 9px 10px; border: 1px solid #e9eee6; border-radius: 12px; background: #fafcf9; display: grid; gap: 7px; }
+    .roster-filter-roles { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+    .filter-role-btn { display: inline-flex; align-items: center; gap: 4px; height: 26px; padding: 0 9px; border: 1px solid #e3e8df; border-radius: 7px; background: #fff; color: #5b6557; font-size: 11.5px; font-weight: 750; transition: border-color .12s, background .12s, color .12s; }
+    .filter-role-btn:hover { border-color: #bfd0bc; color: var(--green-dark); }
+    .filter-role-btn.active { border-color: var(--green); background: var(--green); color: #fff; }
+    .filter-reset-btn { margin-left: auto; border: 0; background: transparent; color: #7e887a; font-size: 11px; font-weight: 700; padding: 2px 4px; }
+    .filter-reset-btn:hover { color: var(--green-dark); text-decoration: underline; }
+    .roster-filter-jobs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 5px; }
+    .filter-job-btn { display: inline-flex; align-items: center; justify-content: space-between; gap: 4px; height: 29px; padding: 0 6px; border: 1px solid var(--job-border, #e4eae1); border-left: 3px solid var(--job-accent, #c7d1c3); border-radius: 8px; background: #fff; color: var(--job-fg, #475144); font-size: 11.5px; font-weight: 700; min-width: 0; transition: border-color .12s, background .12s, color .12s, opacity .12s; }
+    .filter-job-btn:hover { background: var(--job-bg, #f4f8f2); }
+    .filter-job-btn.active { border-color: var(--job-accent, var(--green)); background: var(--job-bg, var(--green-soft)); color: var(--job-fg, var(--green-dark)); box-shadow: inset 0 0 0 1px var(--job-accent, var(--green)); }
+    .filter-job-btn.zero { opacity: .48; }
+    .filter-job-btn.zero.active { opacity: 1; }
+    .filter-job-label { display: inline-flex; align-items: center; gap: 4px; min-width: 0; overflow: hidden; white-space: nowrap; }
+    .filter-job-btn .job-icon { width: 15px; height: 15px; }
+    .filter-job-count { flex: 0 0 auto; color: var(--job-fg, #8b9487); opacity: .75; font-size: 10.5px; font-weight: 700; font-variant-numeric: tabular-nums; }
+    .filter-job-btn.active .filter-job-count { opacity: 1; }
     .roster-items { display: grid; gap: 11px; max-height: 620px; overflow: auto; padding: 0 14px 16px; }
     .account-group { overflow: hidden; border: 1px solid #e7ece4; border-radius: 12px; background: #fff; }
     .account-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 9px 11px; border-bottom: 1px solid #f0f2ee; background: #fafbf9; }
@@ -120,6 +137,16 @@
     .character-name { max-width: 134px; overflow: hidden; font-size: 13px; font-weight: 800; text-overflow: ellipsis; white-space: nowrap; }
     .job-tag, .type-tag { display: inline-flex; align-items: center; gap: 4px; min-height: 23px; padding: 1px 7px; border-radius: 6px; background: #f0f3ee; color: #586251; font-size: 11.5px; font-weight: 700; white-space: nowrap; }
     .job-tag.has-icon { padding: 1px 7px 1px 5px; }
+    .job-tag[data-job] { background: var(--job-bg, #f0f3ee); border: 1px solid var(--job-border, transparent); color: var(--job-fg, #586251); }
+    [data-job="검성"] { --job-accent: #4d95a6; --job-bg: #ebf5f7; --job-border: #b8dce4; --job-fg: #2b6979; }
+    [data-job="수호성"] { --job-accent: #5470a8; --job-bg: #ecf1fa; --job-border: #bccbe8; --job-fg: #344e85; }
+    [data-job="궁성"] { --job-accent: #4e967b; --job-bg: #ebf6f1; --job-border: #b6dfce; --job-fg: #2b6d55; }
+    [data-job="살성"] { --job-accent: #6f9a55; --job-bg: #f0f6ec; --job-border: #c7deb9; --job-fg: #446a2d; }
+    [data-job="마도성"] { --job-accent: #755da8; --job-bg: #f2eff9; --job-border: #cec3e6; --job-fg: #4e3a82; }
+    [data-job="정령성"] { --job-accent: #93559c; --job-bg: #f7eef8; --job-border: #dec0e3; --job-fg: #6d3675; }
+    [data-job="치유성"] { --job-accent: #b59445; --job-bg: #fbf6e6; --job-border: #e7d49b; --job-fg: #7e621e; }
+    [data-job="호법성"] { --job-accent: #a87b49; --job-bg: #f8f0e7; --job-border: #dfc3a4; --job-fg: #7b5227; }
+    [data-job="권성"] { --job-accent: #bd7672; --job-bg: #faf0ef; --job-border: #e5bebc; --job-fg: #8b4643; }
     .job-icon { width: 17px; height: 17px; object-fit: contain; flex: 0 0 auto; display: inline-block; vertical-align: middle; pointer-events: none; -webkit-user-drag: none; user-select: none; }
     .type-tag.main { background: var(--gold-soft); color: #9a6b29; }
     .group-index { display: inline-flex; align-items: center; min-height: 21px; padding: 0 6px; border-radius: 6px; background: #f1f4ee; color: #68765f; font-size: 10.5px; font-weight: 750; white-space: nowrap; }
@@ -136,9 +163,9 @@
     .inline-form-inputs input { width: 100%; min-width: 0; height: 36px; padding: 0 10px; border: 1px solid #dce5d8; border-radius: 8px; outline: none; background: #fff; color: var(--ink); font-size: 12.5px; }
     .inline-form-inputs input:focus { border-color: #84a18a; box-shadow: 0 0 0 3px #e5f0e1; }
     .inline-job-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 5px; }
-    .inline-job-btn { display: inline-flex; align-items: center; justify-content: center; gap: 4px; height: 31px; padding: 0 5px; border: 1px solid #e1e8dd; border-radius: 8px; background: #fff; color: #465043; font-size: 11.5px; font-weight: 700; transition: border-color .12s, background .12s, color .12s; }
-    .inline-job-btn:hover { border-color: #bdd0ba; background: #f4f8f2; }
-    .inline-job-btn.selected { border-color: var(--green); background: var(--green-soft); color: var(--green-dark); box-shadow: inset 0 0 0 1px var(--green); }
+    .inline-job-btn { display: inline-flex; align-items: center; justify-content: center; gap: 4px; height: 31px; padding: 0 5px; border: 1px solid var(--job-border, #e1e8dd); border-left: 3px solid var(--job-accent, #c7d1c3); border-radius: 8px; background: #fff; color: var(--job-fg, #465043); font-size: 11.5px; font-weight: 700; transition: border-color .12s, background .12s, color .12s; }
+    .inline-job-btn:hover { background: var(--job-bg, #f4f8f2); }
+    .inline-job-btn.selected { border-color: var(--job-accent, var(--green)); background: var(--job-bg, var(--green-soft)); color: var(--job-fg, var(--green-dark)); box-shadow: inset 0 0 0 1px var(--job-accent, var(--green)); }
     .inline-job-btn .job-icon { width: 16px; height: 16px; }
     .inline-form-actions { display: flex; align-items: center; justify-content: flex-end; gap: 6px; }
     .inline-form-actions .button.danger { margin-right: auto; }
@@ -165,7 +192,7 @@
     .guide-label { margin-right: 3px; color: #879082; font-size: 11.5px; font-weight: 700; }
     .role-chip { display: inline-flex; align-items: center; flex-wrap: wrap; gap: 5px; padding: 5px 9px; border-radius: 8px; font-size: 11.5px; font-weight: 750; }
     .role-chip::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
-    .role-job-item { display: inline-flex; align-items: center; gap: 3px; white-space: nowrap; }
+    .role-job-item { display: inline-flex; align-items: center; gap: 3px; white-space: nowrap; padding: 1px 6px 1px 4px; border-radius: 6px; background: var(--job-bg, transparent); border: 1px solid var(--job-border, transparent); color: var(--job-fg, inherit); }
     .role-job-item .job-icon { width: 17px; height: 17px; }
     .role-job-sep { opacity: .45; }
     .role-chip.tank { background: #f8eee9; color: #ad674a; }
@@ -399,6 +426,7 @@
             <span class="count-pill" id="roster-count">0명</span>
           </div>
           <p class="roster-hint">한 그룹 안에서는 1·2파티를 통틀어 계정당 한 캐릭터만 들어갈 수 있어요. 본캐·부캐 표시로 캐릭터 종류를 확인하세요.</p>
+          <div class="roster-filter" id="roster-filter" aria-label="직업별 명단 필터"></div>
           <div class="roster-items" id="roster-items" data-roster-drop></div>
         </section>
       </div>
@@ -425,9 +453,9 @@
         </div>
         <div class="role-guide">
           <span class="guide-label">권장 구성</span>
-          <span class="role-chip tank">탱커 · <span class="role-job-item"><img class="job-icon" src="assets/jobs/gladiator.webp" alt="" aria-hidden="true">검성</span> <span class="role-job-sep">/</span> <span class="role-job-item"><img class="job-icon" src="assets/jobs/templar.webp" alt="" aria-hidden="true">수호성</span></span>
-          <span class="role-chip dps">딜러 · <span class="role-job-item"><img class="job-icon" src="assets/jobs/sorcerer.webp" alt="" aria-hidden="true">마도성</span> <span class="role-job-sep">/</span> <span class="role-job-item"><img class="job-icon" src="assets/jobs/ranger.webp" alt="" aria-hidden="true">궁성</span> <span class="role-job-sep">/</span> <span class="role-job-item"><img class="job-icon" src="assets/jobs/spiritmaster.webp" alt="" aria-hidden="true">정령성</span> <span class="role-job-sep">/</span> <span class="role-job-item"><img class="job-icon" src="assets/jobs/brawler.webp" alt="" aria-hidden="true">권성</span> <span class="role-job-sep">/</span> <span class="role-job-item"><img class="job-icon" src="assets/jobs/assassin.webp" alt="" aria-hidden="true">살성</span></span>
-          <span class="role-chip healer">힐러 · <span class="role-job-item"><img class="job-icon" src="assets/jobs/cleric.webp" alt="" aria-hidden="true">치유성</span> <span class="role-job-sep">/</span> <span class="role-job-item"><img class="job-icon" src="assets/jobs/chanter.webp" alt="" aria-hidden="true">호법성</span></span>
+          <span class="role-chip tank">탱커 · <span class="role-job-item" data-job="검성"><img class="job-icon" src="assets/jobs/gladiator.webp" alt="" aria-hidden="true">검성</span> <span class="role-job-sep">/</span> <span class="role-job-item" data-job="수호성"><img class="job-icon" src="assets/jobs/templar.webp" alt="" aria-hidden="true">수호성</span></span>
+          <span class="role-chip dps">딜러 · <span class="role-job-item" data-job="마도성"><img class="job-icon" src="assets/jobs/sorcerer.webp" alt="" aria-hidden="true">마도성</span> <span class="role-job-sep">/</span> <span class="role-job-item" data-job="궁성"><img class="job-icon" src="assets/jobs/ranger.webp" alt="" aria-hidden="true">궁성</span> <span class="role-job-sep">/</span> <span class="role-job-item" data-job="정령성"><img class="job-icon" src="assets/jobs/spiritmaster.webp" alt="" aria-hidden="true">정령성</span> <span class="role-job-sep">/</span> <span class="role-job-item" data-job="권성"><img class="job-icon" src="assets/jobs/brawler.webp" alt="" aria-hidden="true">권성</span> <span class="role-job-sep">/</span> <span class="role-job-item" data-job="살성"><img class="job-icon" src="assets/jobs/assassin.webp" alt="" aria-hidden="true">살성</span></span>
+          <span class="role-chip healer">힐러 · <span class="role-job-item" data-job="치유성"><img class="job-icon" src="assets/jobs/cleric.webp" alt="" aria-hidden="true">치유성</span> <span class="role-job-sep">/</span> <span class="role-job-item" data-job="호법성"><img class="job-icon" src="assets/jobs/chanter.webp" alt="" aria-hidden="true">호법성</span></span>
           <label class="target-control" for="target-group">빠른 배치 위치
             <select class="target-select" id="target-group"><option value="0">1그룹</option></select>
             <select class="target-select" id="target-party"><option value="0">1파티</option><option value="1">2파티</option></select>
@@ -566,6 +594,17 @@
     (function () {
       const JOBS = ["검성", "수호성", "마도성", "궁성", "정령성", "권성", "살성", "치유성", "호법성"];
       const ROLE_BY_JOB = { "검성": "tank", "수호성": "tank", "마도성": "dps", "궁성": "dps", "정령성": "dps", "권성": "dps", "살성": "dps", "치유성": "healer", "호법성": "healer" };
+      const JOB_COLORS = {
+        "검성": { accent: "#4d95a6", bg: "#ebf5f7", border: "#b8dce4", fg: "#2b6979" },
+        "수호성": { accent: "#5470a8", bg: "#ecf1fa", border: "#bccbe8", fg: "#344e85" },
+        "궁성": { accent: "#4e967b", bg: "#ebf6f1", border: "#b6dfce", fg: "#2b6d55" },
+        "살성": { accent: "#6f9a55", bg: "#f0f6ec", border: "#c7deb9", fg: "#446a2d" },
+        "마도성": { accent: "#755da8", bg: "#f2eff9", border: "#cec3e6", fg: "#4e3a82" },
+        "정령성": { accent: "#93559c", bg: "#f7eef8", border: "#dec0e3", fg: "#6d3675" },
+        "치유성": { accent: "#b59445", bg: "#fbf6e6", border: "#e7d49b", fg: "#7e621e" },
+        "호법성": { accent: "#a87b49", bg: "#f8f0e7", border: "#dfc3a4", fg: "#7b5227" },
+        "권성": { accent: "#bd7672", bg: "#faf0ef", border: "#e5bebc", fg: "#8b4643" }
+      };
       const JOB_ICON_PATHS = {
         "검성": "assets/jobs/gladiator.webp",
         "수호성": "assets/jobs/templar.webp",
@@ -606,6 +645,7 @@
       let editingGroupIndex = null;
       let addingAltAccountId = null;
       let editingCharId = null;
+      const selectedRosterJobs = new Set();
       let toastTimer = 0;
 
       function getJobIconSrc(job) {
@@ -620,7 +660,8 @@
 
       function renderJobTag(job) {
         const icon = renderJobIcon(job);
-        return '<span class="job-tag' + (icon ? ' has-icon' : '') + '">' + icon + '<span>' + safe(job) + '</span></span>';
+        const attr = JOB_COLORS[job] ? ' data-job="' + safe(job) + '"' : '';
+        return '<span class="job-tag' + (icon ? ' has-icon' : '') + '"' + attr + '>' + icon + '<span>' + safe(job) + '</span></span>';
       }
 
       const JOB_PICKER_CARET = '<svg class="job-picker-caret" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 4.5 6 8l3.5-3.5"/></svg>';
@@ -630,7 +671,7 @@
         return JOBS.map(function (job) {
           const selected = job === selectedJob;
           const roleName = ROLE_LABEL[ROLE_BY_JOB[job]] || "";
-          return '<button class="job-picker-option' + (selected ? ' selected' : '') + '" type="button" role="option" aria-selected="' + String(selected) + '" data-job-option="' + safe(job) + '">' + renderJobIcon(job) + '<span>' + safe(job) + '</span><small>' + safe(roleName) + '</small></button>';
+          return '<button class="job-picker-option' + (selected ? ' selected' : '') + '" type="button" role="option" aria-selected="' + String(selected) + '" data-job="' + safe(job) + '" data-job-option="' + safe(job) + '">' + renderJobIcon(job) + '<span>' + safe(job) + '</span><small>' + safe(roleName) + '</small></button>';
         }).join("");
       }
 
@@ -643,9 +684,15 @@
         const job = select.value;
         if (job && JOBS.indexOf(job) !== -1) {
           valueEl.classList.remove("placeholder");
+          valueEl.setAttribute("data-job", job);
+          valueEl.style.color = (JOB_COLORS[job] && JOB_COLORS[job].fg) || "";
+          valueEl.style.fontWeight = "750";
           valueEl.innerHTML = renderJobIcon(job) + '<span>' + safe(job) + '</span>';
         } else {
           valueEl.classList.add("placeholder");
+          valueEl.removeAttribute("data-job");
+          valueEl.style.color = "";
+          valueEl.style.fontWeight = "";
           valueEl.textContent = "직업 선택";
         }
         menu.innerHTML = buildJobPickerMenuHtml(job);
@@ -947,19 +994,90 @@
           (isEditing ? renderInlineEditCharForm(account, character) : '');
       }
 
+      function jobsForRole(role) {
+        return JOBS.filter(function (job) { return ROLE_BY_JOB[job] === role; });
+      }
+
+      function isRoleFilterActive(role) {
+        if (role === "all") return selectedRosterJobs.size === 0;
+        const roleJobs = jobsForRole(role);
+        return selectedRosterJobs.size === roleJobs.length && roleJobs.every(function (job) { return selectedRosterJobs.has(job); });
+      }
+
+      function renderRosterFilter() {
+        const container = document.getElementById("roster-filter");
+        if (!container) return;
+        const countsByJob = {};
+        JOBS.forEach(function (job) { countsByJob[job] = 0; });
+        characters().forEach(function (character) {
+          if (countsByJob[character.job] !== undefined) countsByJob[character.job] += 1;
+        });
+        const roleButtons = [
+          { key: "all", label: "전체" },
+          { key: "tank", label: "탱커" },
+          { key: "dps", label: "딜러" },
+          { key: "healer", label: "힐러" }
+        ].map(function (item) {
+          const active = isRoleFilterActive(item.key);
+          return '<button class="filter-role-btn' + (active ? ' active' : '') + '" type="button" data-action="filter-role" data-role="' + item.key + '" aria-pressed="' + String(active) + '">' + item.label + '</button>';
+        }).join("");
+        const resetBtn = selectedRosterJobs.size > 0
+          ? '<button class="filter-reset-btn" type="button" data-action="filter-reset">초기화</button>'
+          : '';
+        const jobButtons = JOBS.map(function (job) {
+          const active = selectedRosterJobs.has(job);
+          const count = countsByJob[job] || 0;
+          return '<button class="filter-job-btn' + (active ? ' active' : '') + (count === 0 ? ' zero' : '') + '" type="button" data-action="filter-job" data-job="' + safe(job) + '" aria-pressed="' + String(active) + '">' +
+            '<span class="filter-job-label">' + renderJobIcon(job) + '<span>' + safe(job) + '</span></span>' +
+            '<span class="filter-job-count">' + count + '</span>' +
+          '</button>';
+        }).join("");
+        container.innerHTML =
+          '<div class="roster-filter-roles">' + roleButtons + resetBtn + '</div>' +
+          '<div class="roster-filter-jobs">' + jobButtons + '</div>';
+      }
+
       function renderRoster() {
+        renderRosterFilter();
         const root = document.getElementById("roster-items");
+        const countEl = document.getElementById("roster-count");
+        const totalChars = characters().length;
+        const hasFilter = selectedRosterJobs.size > 0;
         if (!state.accounts.length) {
+          if (countEl) countEl.textContent = "0명";
           root.innerHTML = '<div class="empty-roster"><div class="empty-icon">＋</div><strong>아직 등록된 캐릭터가 없어요</strong><span>왼쪽에서 본캐 정보를 입력하고<br>명단에 등록해 보세요.</span></div>';
           return;
         }
-        root.innerHTML = state.accounts.map(function (account) {
+        let matchedTotal = 0;
+        const cards = [];
+        state.accounts.forEach(function (account) {
           const main = account.characters.find(function (character) { return character.isMain; });
           const isAddingAlt = addingAltAccountId === account.id;
-          return '<div class="account-group"><div class="account-head"><div class="account-name"><span title="' + safe(main ? main.name : "캐릭터") + '">' + safe(main ? main.name : "캐릭터") + ' 계정</span><small>' + account.characters.length + '명</small></div><div class="account-actions"><button class="account-add-alt' + (isAddingAlt ? ' active' : '') + '" type="button" data-action="toggle-account-alt" data-account="' + safe(account.id) + '">＋ 부캐 추가</button><button class="account-delete" type="button" data-action="delete-account" data-account="' + safe(account.id) + '">계정 삭제</button></div></div>' +
-            account.characters.map(function (character, index) { return renderCharacterRow(account, character, index); }).join("") +
-            (isAddingAlt ? renderInlineAddAltForm(account) : '') + '</div>';
-        }).join("");
+          const visibleEntries = [];
+          account.characters.forEach(function (character, index) {
+            if (!hasFilter || selectedRosterJobs.has(character.job) || editingCharId === character.id) {
+              visibleEntries.push({ character: character, index: index });
+            }
+          });
+          if (!visibleEntries.length && !isAddingAlt) return;
+          matchedTotal += visibleEntries.length;
+          const countLabel = hasFilter
+            ? visibleEntries.length + ' / ' + account.characters.length + '명'
+            : account.characters.length + '명';
+          cards.push(
+            '<div class="account-group"><div class="account-head"><div class="account-name"><span title="' + safe(main ? main.name : "캐릭터") + '">' + safe(main ? main.name : "캐릭터") + ' 계정</span><small>' + countLabel + '</small></div><div class="account-actions"><button class="account-add-alt' + (isAddingAlt ? ' active' : '') + '" type="button" data-action="toggle-account-alt" data-account="' + safe(account.id) + '">＋ 부캐 추가</button><button class="account-delete" type="button" data-action="delete-account" data-account="' + safe(account.id) + '">계정 삭제</button></div></div>' +
+            visibleEntries.map(function (entry) { return renderCharacterRow(account, entry.character, entry.index); }).join("") +
+            (isAddingAlt ? renderInlineAddAltForm(account) : '') + '</div>'
+          );
+        });
+        if (countEl) {
+          countEl.textContent = hasFilter ? (matchedTotal + " / " + totalChars + "명") : (totalChars + "명");
+        }
+        if (!cards.length) {
+          root.innerHTML = '<div class="empty-roster"><div class="empty-icon">⌕</div><strong>선택한 직업의 캐릭터가 없어요</strong><span>다른 직업을 선택하거나 필터를 초기화해 보세요.</span><div style="margin-top:12px"><button class="button small ghost-green" type="button" data-action="filter-reset">전체 보기</button></div></div>';
+          return;
+        }
+        root.innerHTML = cards.join("");
       }
 
       function renderSlot(id, groupIndex, partyIndex, slotIndex) {
@@ -1182,6 +1300,26 @@
         }
         if (action === "delete-character") {
           deleteCharacter(button.dataset.account, button.dataset.id);
+        }
+        if (action === "filter-role") {
+          const role = button.dataset.role;
+          if (role === "all" || isRoleFilterActive(role)) {
+            selectedRosterJobs.clear();
+          } else {
+            selectedRosterJobs.clear();
+            jobsForRole(role).forEach(function (job) { selectedRosterJobs.add(job); });
+          }
+          renderRoster();
+        }
+        if (action === "filter-job") {
+          const job = button.dataset.job;
+          if (selectedRosterJobs.has(job)) selectedRosterJobs.delete(job);
+          else if (JOBS.indexOf(job) !== -1) selectedRosterJobs.add(job);
+          renderRoster();
+        }
+        if (action === "filter-reset") {
+          selectedRosterJobs.clear();
+          renderRoster();
         }
         if (action === "auto-group") {
           autoArrangeGroup(Number(button.dataset.group));
@@ -2819,11 +2957,12 @@
               ctx.fillText(drawnName, nameStartX, sy + 23.5);
 
               const jobX = nameStartX + drawnNameW + 7;
-              fillStrokeRoundedRect(ctx, jobX, sy + 13, jobPillW, 20, 6, "#f0f3ee", null);
+              const jobCol = JOB_COLORS[character.job] || { bg: "#f0f3ee", border: null, fg: "#4d5747" };
+              fillStrokeRoundedRect(ctx, jobX, sy + 13, jobPillW, 20, 6, jobCol.bg, jobCol.border, 1);
               if (jobIconImg) {
                 ctx.drawImage(jobIconImg, jobX + jobPadL, sy + 13 + (20 - jobIconSize) / 2, jobIconSize, jobIconSize);
               }
-              ctx.fillStyle = "#4d5747";
+              ctx.fillStyle = jobCol.fg;
               ctx.font = "700 10.5px " + fontFamily;
               ctx.textAlign = "left";
               ctx.textBaseline = "middle";
