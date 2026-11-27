@@ -267,7 +267,12 @@
     .settings-head h2 { margin: 0; font-size: 20px; letter-spacing: -.03em; }
     .settings-head p { margin: 6px 0 0; color: var(--muted); font-size: 12.5px; line-height: 1.6; }
     .settings-close { width: 35px; height: 35px; border: 1px solid var(--line); border-radius: 9px; background: #fff; color: #778071; font-size: 20px; }
-    .settings-main { display: grid; grid-template-columns: 196px minmax(0, 1fr); align-items: center; gap: 14px; margin-bottom: 16px; padding: 15px; border: 1px solid #e9eee6; border-radius: 14px; background: #fafcf9; }
+    .settings-main { display: grid; grid-template-columns: 196px minmax(0, 1fr); align-items: start; gap: 14px; margin-bottom: 16px; padding: 15px; border: 1px solid #e9eee6; border-radius: 14px; background: #fafcf9; }
+    .settings-toggles { display: grid; gap: 11px; }
+    .settings-presets { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; margin-bottom: 14px; }
+    .settings-presets-label { color: #737d6f; font-size: 11.5px; font-weight: 750; margin-right: 2px; }
+    .preset-chip { display: inline-flex; align-items: center; height: 30px; padding: 0 10px; border: 1px solid #dce5d8; border-radius: 8px; background: #fff; color: #475443; font-size: 11.5px; font-weight: 700; transition: border-color .15s, background .15s, color .15s; }
+    .preset-chip:hover { border-color: var(--green); background: var(--green-soft); color: var(--green-dark); }
     .settings-main label:first-child { display: grid; gap: 5px; color: #515b4e; font-size: 12px; font-weight: 800; }
     .settings-main input[type=number] { width: 100%; height: 39px; padding: 0 11px; border: 1px solid #e3e8df; border-radius: 9px; font-size: 13.5px; }
     .settings-toggle { display: flex; align-items: flex-start; gap: 9px; color: #485344; font-size: 12.5px; font-weight: 750; line-height: 1.5; }
@@ -448,7 +453,16 @@
         <label for="main-target-input">본캐 목표 수 (0–10)
           <input id="main-target-input" type="number" min="0" max="10" step="1" value="5">
         </label>
-        <label class="settings-toggle"><input id="fill-alts-input" type="checkbox" checked><span>목표 본캐를 배치한 뒤 남은 역할 자리를 부캐로 채우기<small>같은 계정은 이 그룹에서 한 번만 편성됩니다.</small></span></label>
+        <div class="settings-toggles">
+          <label class="settings-toggle"><input id="fill-alts-input" type="checkbox" checked><span>목표 본캐를 배치한 뒤 남은 역할 자리를 부캐로 채우기<small>같은 계정은 이 그룹에서 한 번만 편성됩니다.</small></span></label>
+          <label class="settings-toggle"><input id="flexible-roles-input" type="checkbox" checked><span>역할 부족 시 유동 조합으로 빈 자리 자동 채우기<small>2힐은 치유·호법 조합을 우선하고, 부족하면 탱1·딜3·힐1 → 딜4·힐1 순으로 자동 대체합니다.</small></span></label>
+        </div>
+      </div>
+      <div class="settings-presets" id="settings-presets">
+        <span class="settings-presets-label">빠른 프리셋</span>
+        <button class="preset-chip" type="button" data-role-preset="1,2,2">정석 (탱1 · 딜2 · 힐2)</button>
+        <button class="preset-chip" type="button" data-role-preset="1,3,1">1힐 (탱1 · 딜3 · 힐1)</button>
+        <button class="preset-chip" type="button" data-role-preset="0,4,1">노탱 (딜4 · 힐1)</button>
       </div>
       <div class="party-settings-grid" id="party-settings-grid"></div>
       <p class="settings-validation" id="settings-validation" role="status"></p>
@@ -586,7 +600,7 @@
         { tank: 1, dps: 2, healer: 2 },
         { tank: 1, dps: 2, healer: 2 }
       ]; };
-      const emptyGroup = function () { return { parties: emptyParties(), lockedSlots: emptyLocks(), mainTarget: 5, fillAlts: true, partyRoles: defaultPartyRoles() }; };
+      const emptyGroup = function () { return { parties: emptyParties(), lockedSlots: emptyLocks(), mainTarget: 5, fillAlts: true, flexibleRoles: true, partyRoles: defaultPartyRoles() }; };
       let state = loadState();
       let activeSectionKey = SECTION_KEYS.indexOf(state.activeSection) === -1 ? "erosion" : state.activeSection;
       let editingGroupIndex = null;
@@ -772,6 +786,7 @@
           lockedSlots: lockedSlots,
           mainTarget: clampCount(group && group.mainTarget, 10, 5),
           fillAlts: !group || group.fillAlts !== false,
+          flexibleRoles: !group || group.flexibleRoles !== false,
           partyRoles: partyRoles
         };
       }
@@ -971,7 +986,8 @@
 
       function renderGroups() {
         document.getElementById("groups").innerHTML = currentGroups().map(function (group, groupIndex) {
-          const fillDescription = group.fillAlts ? "부캐로 빈 역할 충원" : "부캐 자동 충원 안 함";
+          const fillDescription = group.fillAlts ? "부캐 충원" : "본캐만 편성";
+          const flexDescription = group.flexibleRoles !== false ? "유동 조합" : "고정 조합";
           const members = group.parties.reduce(function (all, party) { return all.concat(party.filter(Boolean)); }, []).map(getCharacter).filter(Boolean);
           const mains = members.filter(function (character) { return character.isMain; }).length;
           const alts = members.length - mains;
@@ -981,7 +997,7 @@
             }).length;
           }, 0);
           const lockedText = lockedCount > 0 ? ' · 고정 ' + lockedCount + '명' : '';
-          return '<section class="group-section" data-group-section="' + groupIndex + '"><div class="group-head"><div class="group-heading"><span class="group-mark">G' + (groupIndex + 1) + '</span><div><h3 class="group-title">' + (groupIndex + 1) + '그룹</h3><p class="group-description">본캐 ' + mains + ' / 목표 ' + group.mainTarget + '명 · 부캐 ' + alts + '명' + lockedText + ' · ' + fillDescription + ' · 계정당 한 캐릭터</p></div></div><div class="group-actions"><button class="button small" type="button" data-action="export-group-image" data-group="' + groupIndex + '">PNG</button><button class="button small" type="button" data-action="group-settings" data-group="' + groupIndex + '">편성 설정</button><button class="button primary small" type="button" data-action="auto-group" data-group="' + groupIndex + '">이 그룹 자동 편성</button><button class="button small" type="button" data-action="clear-group" data-group="' + groupIndex + '">비우기</button></div></div><div class="parties">' + group.parties.map(function (party, partyIndex) { return renderParty(party, groupIndex, partyIndex); }).join("") + '</div></section>';
+          return '<section class="group-section" data-group-section="' + groupIndex + '"><div class="group-head"><div class="group-heading"><span class="group-mark">G' + (groupIndex + 1) + '</span><div><h3 class="group-title">' + (groupIndex + 1) + '그룹</h3><p class="group-description">본캐 ' + mains + ' / 목표 ' + group.mainTarget + '명 · 부캐 ' + alts + '명' + lockedText + ' · ' + fillDescription + ' · ' + flexDescription + ' · 계정당 한 캐릭터</p></div></div><div class="group-actions"><button class="button small" type="button" data-action="export-group-image" data-group="' + groupIndex + '">PNG</button><button class="button small" type="button" data-action="group-settings" data-group="' + groupIndex + '">편성 설정</button><button class="button primary small" type="button" data-action="auto-group" data-group="' + groupIndex + '">이 그룹 자동 편성</button><button class="button small" type="button" data-action="clear-group" data-group="' + groupIndex + '">비우기</button></div></div><div class="parties">' + group.parties.map(function (party, partyIndex) { return renderParty(party, groupIndex, partyIndex); }).join("") + '</div></section>';
         }).join("");
       }
 
@@ -1201,15 +1217,29 @@
       document.getElementById("save-group-settings").addEventListener("click", saveGroupSettings);
       document.getElementById("party-settings-grid").addEventListener("input", updateSettingsTotals);
       document.getElementById("main-target-input").addEventListener("input", updateSettingsTotals);
+      document.getElementById("settings-presets").addEventListener("click", function (event) {
+        const btn = event.target.closest("[data-role-preset]");
+        if (!btn) return;
+        const parts = btn.dataset.rolePreset.split(",").map(Number);
+        if (parts.length !== 3) return;
+        [0, 1].forEach(function (partyIndex) {
+          ROLE_KEYS.forEach(function (role, roleIdx) {
+            const input = document.querySelector('[data-party="' + partyIndex + '"][data-role="' + role + '"]');
+            if (input) input.value = String(parts[roleIdx]);
+          });
+        });
+        updateSettingsTotals();
+      });
 
       function openGroupSettings(groupIndex) {
         const group = currentGroups()[groupIndex];
         if (!group) return;
         editingGroupIndex = groupIndex;
         document.getElementById("settings-title").textContent = SECTION_LABELS[activeSectionKey] + " · " + (groupIndex + 1) + "그룹 설정";
-        document.getElementById("settings-explanation").textContent = "각 파티의 역할 수를 정하고, 본캐 목표 이후 남는 역할 자리를 부캐로 채울지 선택하세요.";
+        document.getElementById("settings-explanation").textContent = "각 파티의 기본 역할 수와 본캐·부캐 및 유동 조합 방식을 정하세요.";
         document.getElementById("main-target-input").value = group.mainTarget;
         document.getElementById("fill-alts-input").checked = group.fillAlts;
+        document.getElementById("flexible-roles-input").checked = group.flexibleRoles !== false;
         document.getElementById("party-settings-grid").innerHTML = group.partyRoles.map(function (roles, partyIndex) {
           return '<section class="party-setting-card"><div class="party-setting-head"><strong>' + (partyIndex + 1) + '파티 역할 구성</strong><small>최대 5명</small></div><div class="role-count-fields">' + ROLE_KEYS.map(function (role) {
             return '<label class="role-count-field">' + ROLE_LABEL[role] + '<input type="number" min="0" max="5" step="1" value="' + roles[role] + '" data-party="' + partyIndex + '" data-role="' + role + '"></label>';
@@ -1258,6 +1288,7 @@
         if (invalidMain || invalidRoles) { updateSettingsTotals(); return; }
         group.mainTarget = mainCount;
         group.fillAlts = document.getElementById("fill-alts-input").checked;
+        group.flexibleRoles = document.getElementById("flexible-roles-input").checked;
         group.partyRoles = partyRoles;
         saveState();
         document.getElementById("group-settings-dialog").close();
@@ -1544,6 +1575,39 @@
         });
       }
 
+      function buildInterleavedRoleQueue(roleSlots) {
+        const buckets = [0, 1].map(function (partyIndex) {
+          const map = { tank: [], healer: [], dps: [] };
+          (roleSlots[partyIndex] || []).forEach(function (entry) {
+            if (map[entry.role]) {
+              map[entry.role].push({ partyIndex: partyIndex, slot: entry.slot, role: entry.role });
+            }
+          });
+          return map;
+        });
+        const queue = [];
+        function shiftOne(role) {
+          [0, 1].forEach(function (partyIndex) {
+            if (buckets[partyIndex][role].length) queue.push(buckets[partyIndex][role].shift());
+          });
+        }
+        function drainRole(role) {
+          while (buckets[0][role].length || buckets[1][role].length) {
+            shiftOne(role);
+          }
+        }
+        // Wave 1: ensure both parties get 1 tank and 1 healer before doubling up
+        shiftOne("tank");
+        shiftOne("healer");
+        // Wave 2: 2nd healer (completes 치유+호법 pair when available)
+        drainRole("healer");
+        // Wave 3: extra tanks (if custom configured)
+        drainRole("tank");
+        // Wave 4: DPS evenly across both parties
+        drainRole("dps");
+        return queue;
+      }
+
       function buildAutoGroupPlan(groupIndex, alreadyUsedIds) {
         const group = currentGroups()[groupIndex];
         const usedIds = new Set(alreadyUsedIds || []);
@@ -1565,6 +1629,7 @@
         let mainCount = 0;
         let lockedCount = 0;
         let autoCount = 0;
+        let fallbackCount = 0;
 
         [0, 1].forEach(function (partyIndex) {
           for (let slotIndex = 0; slotIndex < 5; slotIndex += 1) {
@@ -1598,12 +1663,41 @@
           };
         });
 
-        function take(role, type) {
-          const pool = byRoleAndType[role][type];
-          const character = pool.find(function (item) {
-            const owner = accountId(item);
-            return !chosenIds.has(item.id) && owner && !usedAccounts.has(owner);
+        function partyHealerSubCounts(partyIndex) {
+          let cleric = 0;
+          let chanter = 0;
+          newParties[partyIndex].forEach(function (id) {
+            const ch = id && getCharacter(id);
+            if (!ch) return;
+            if (ch.job === "치유성") cleric += 1;
+            else if (ch.job === "호법성") chanter += 1;
           });
+          return { cleric: cleric, chanter: chanter };
+        }
+
+        function take(role, type, partyIndex, preferredJob) {
+          const pool = byRoleAndType[role][type];
+          const findAvailable = function (predicate) {
+            return pool.find(function (item) {
+              const owner = accountId(item);
+              if (chosenIds.has(item.id) || !owner || usedAccounts.has(owner)) return false;
+              return !predicate || predicate(item);
+            });
+          };
+          let character = null;
+          if (preferredJob) {
+            character = findAvailable(function (item) { return item.job === preferredJob; });
+          } else if (role === "healer") {
+            const counts = partyHealerSubCounts(partyIndex);
+            if (counts.cleric > counts.chanter) {
+              character = findAvailable(function (item) { return item.job === "호법성"; });
+            } else if (counts.chanter > counts.cleric) {
+              character = findAvailable(function (item) { return item.job === "치유성"; });
+            }
+          }
+          if (!character) {
+            character = findAvailable(null);
+          }
           if (!character) return null;
           const owner = accountId(character);
           chosenIds.add(character.id);
@@ -1616,22 +1710,82 @@
         const roleSlots = [0, 1].map(function (partyIndex) {
           return buildRemainingRolePlan(group.partyRoles[partyIndex], lockedRoleCounts[partyIndex], emptySlotsByParty[partyIndex], lockedInParty[partyIndex]);
         });
-        roleSlots.forEach(function (slots, partyIndex) {
-          slots.forEach(function (entry) {
-            if (mainCount >= group.mainTarget) return;
-            const character = take(entry.role, "main");
-            if (character) newParties[partyIndex][entry.slot] = character.id;
-          });
+        const queue = buildInterleavedRoleQueue(roleSlots);
+
+        // Stage 1: exact configured roles (main up to mainTarget, then alts if fillAlts)
+        queue.forEach(function (entry) {
+          if (newParties[entry.partyIndex][entry.slot] || mainCount >= group.mainTarget) return;
+          const character = take(entry.role, "main", entry.partyIndex);
+          if (character) newParties[entry.partyIndex][entry.slot] = character.id;
         });
         if (group.fillAlts) {
-          roleSlots.forEach(function (slots, partyIndex) {
-            slots.forEach(function (entry) {
-              if (newParties[partyIndex][entry.slot]) return;
-              const character = take(entry.role, "alt");
-              if (character) newParties[partyIndex][entry.slot] = character.id;
-            });
+          queue.forEach(function (entry) {
+            if (newParties[entry.partyIndex][entry.slot]) return;
+            const character = take(entry.role, "alt", entry.partyIndex);
+            if (character) newParties[entry.partyIndex][entry.slot] = character.id;
           });
         }
+
+        // Stage 2: flexible role fallback when configured roles run short
+        if (group.flexibleRoles !== false) {
+          const fallbackSteps = function (wantedRole) {
+            if (wantedRole === "healer") return [{ role: "dps" }, { role: "tank" }];
+            if (wantedRole === "tank") return [{ role: "dps" }, { role: "healer", preferredJob: "호법성" }];
+            return [{ role: "tank" }, { role: "healer", preferredJob: "호법성" }];
+          };
+          const takeFlexible = function (entry, type) {
+            const steps = fallbackSteps(entry.role);
+            for (let i = 0; i < steps.length; i += 1) {
+              const character = take(steps[i].role, type, entry.partyIndex, steps[i].preferredJob);
+              if (character) return character;
+            }
+            return null;
+          };
+          const unfilled = queue.filter(function (entry) { return !newParties[entry.partyIndex][entry.slot]; });
+          unfilled.forEach(function (entry) {
+            if (newParties[entry.partyIndex][entry.slot] || mainCount >= group.mainTarget) return;
+            const character = takeFlexible(entry, "main");
+            if (character) {
+              newParties[entry.partyIndex][entry.slot] = character.id;
+              fallbackCount += 1;
+            }
+          });
+          if (group.fillAlts) {
+            unfilled.forEach(function (entry) {
+              if (newParties[entry.partyIndex][entry.slot]) return;
+              const character = takeFlexible(entry, "alt");
+              if (character) {
+                newParties[entry.partyIndex][entry.slot] = character.id;
+                fallbackCount += 1;
+              }
+            });
+          }
+        }
+
+        // Sort unlocked auto-filled slots neatly (탱커 → 딜러 → 치유성 → 호법성, power desc)
+        [0, 1].forEach(function (partyIndex) {
+          const unlockedIndices = [];
+          const unlockedChars = [];
+          for (let slotIndex = 0; slotIndex < 5; slotIndex += 1) {
+            if (newLocks[partyIndex][slotIndex]) continue;
+            unlockedIndices.push(slotIndex);
+            const id = newParties[partyIndex][slotIndex];
+            const ch = id && getCharacter(id);
+            if (ch) unlockedChars.push(ch);
+          }
+          unlockedChars.sort(function (a, b) {
+            const roleDiff = ROLE_KEYS.indexOf(ROLE_BY_JOB[a.job]) - ROLE_KEYS.indexOf(ROLE_BY_JOB[b.job]);
+            if (roleDiff !== 0) return roleDiff;
+            if (ROLE_BY_JOB[a.job] === "healer" && a.job !== b.job) {
+              return a.job === "치유성" ? -1 : 1;
+            }
+            return b.power - a.power;
+          });
+          unlockedIndices.forEach(function (slotIndex, idx) {
+            newParties[partyIndex][slotIndex] = unlockedChars[idx] ? unlockedChars[idx].id : null;
+          });
+        });
+
         return {
           parties: newParties,
           lockedSlots: newLocks,
@@ -1639,6 +1793,7 @@
           count: lockedCount + autoCount,
           lockedCount: lockedCount,
           autoCount: autoCount,
+          fallbackCount: fallbackCount,
           mainCount: mainCount
         };
       }
@@ -1659,6 +1814,7 @@
         const usedIds = collectLockedIds(-1);
         let autoTotal = 0;
         let lockedTotal = 0;
+        let fallbackTotal = 0;
         groups.forEach(function (group, groupIndex) {
           const plan = buildAutoGroupPlan(groupIndex, usedIds);
           group.parties = plan.parties;
@@ -1666,15 +1822,17 @@
           plan.usedIds.forEach(function (id) { usedIds.add(id); });
           autoTotal += plan.autoCount;
           lockedTotal += plan.lockedCount;
+          fallbackTotal += plan.fallbackCount || 0;
         });
         saveState();
         render();
+        const fallbackNote = fallbackTotal > 0 ? " (유동 대체 " + fallbackTotal + "명)" : "";
         if (lockedTotal > 0 && autoTotal === 0) {
           showToast("수동 고정 " + lockedTotal + "명을 유지했어요. 추가로 자동 편성할 후보가 없어요.");
         } else if (lockedTotal > 0) {
-          showToast(SECTION_LABELS[activeSectionKey] + " " + groups.length + "개 그룹에 수동 고정 " + lockedTotal + "명을 유지하고 " + autoTotal + "명을 자동 편성했어요.");
+          showToast(SECTION_LABELS[activeSectionKey] + " " + groups.length + "개 그룹에 수동 고정 " + lockedTotal + "명을 유지하고 " + autoTotal + "명을 자동 편성했어요." + fallbackNote);
         } else {
-          showToast(SECTION_LABELS[activeSectionKey] + " " + groups.length + "개 그룹에 " + autoTotal + "명을 편성했어요.");
+          showToast(SECTION_LABELS[activeSectionKey] + " " + groups.length + "개 그룹에 " + autoTotal + "명을 편성했어요." + fallbackNote);
         }
       }
 
@@ -1686,14 +1844,15 @@
         groups[groupIndex].lockedSlots = plan.lockedSlots;
         saveState();
         render();
+        const fallbackNote = plan.fallbackCount > 0 ? " (유동 대체 " + plan.fallbackCount + "명)" : "";
         if (plan.lockedCount > 0 && plan.autoCount === 0) {
           showToast((groupIndex + 1) + "그룹의 수동 고정 " + plan.lockedCount + "명을 유지했어요. 추가로 편성할 수 있는 후보가 없어요.");
         } else if (plan.lockedCount > 0) {
-          showToast((groupIndex + 1) + "그룹에 수동 고정 " + plan.lockedCount + "명을 유지하고 " + plan.autoCount + "명을 자동 편성했어요.");
+          showToast((groupIndex + 1) + "그룹에 수동 고정 " + plan.lockedCount + "명을 유지하고 " + plan.autoCount + "명을 자동 편성했어요." + fallbackNote);
         } else if (!plan.count) {
           showToast((groupIndex + 1) + "그룹에 편성 가능한 캐릭터가 없어요.");
         } else {
-          showToast((groupIndex + 1) + "그룹에 본캐 " + plan.mainCount + "명 포함, 총 " + plan.count + "명을 편성했어요.");
+          showToast((groupIndex + 1) + "그룹에 본캐 " + plan.mainCount + "명 포함, 총 " + plan.count + "명을 편성했어요." + fallbackNote);
         }
       }
 
@@ -1923,7 +2082,8 @@
                     const id = group.parties[partyIndex][slotIndex];
                     return locked && id && charIndexById.has(id) ? 1 : 0;
                   });
-                })
+                }),
+                group.flexibleRoles !== false ? 1 : 0
               ];
             })
           ];
@@ -2022,6 +2182,7 @@
                 lockedSlots: lockedSlots,
                 mainTarget: clampCount(rawGroup[0], 10, 5),
                 fillAlts: rawGroup[1] !== 0,
+                flexibleRoles: rawGroup[5] !== undefined ? rawGroup[5] !== 0 : true,
                 partyRoles: partyRoles
               });
             });
