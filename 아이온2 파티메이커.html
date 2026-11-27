@@ -90,6 +90,7 @@
     .character-row.participating { border-left: 3px solid #5f8960; padding-left: 6px; background: #edf5e9; }
     .character-row.participating:hover { background: #e5f0df; }
     .assignment-tag { display: inline-flex; align-items: center; min-height: 18px; padding: 0 6px; border-radius: 6px; background: #dcebd7; color: #3c6940; font-size: 8px; font-weight: 800; white-space: nowrap; }
+    .assignment-tag.locked { background: #d5e6cf; color: var(--green-dark); }
     .character-row.dragging, .party-slot.dragging { opacity: .45; }
     .candidate-check { width: 14px; height: 14px; margin: 0; accent-color: var(--green); cursor: pointer; }
     .character-main { display: flex; align-items: center; gap: 6px; min-width: 0; flex-wrap: wrap; }
@@ -149,6 +150,8 @@
     .party-slots { display: grid; gap: 7px; }
     .party-slot { display: grid; grid-template-columns: 23px minmax(0, 1fr) auto; align-items: center; gap: 8px; min-height: 55px; padding: 7px 8px; border: 1px dashed #e2e8de; border-radius: 10px; background: #fff; transition: border-color .15s, background .15s; }
     .party-slot.empty { background: #fbfcfa; }
+    .party-slot.locked { border: 1px solid #c6dac4; background: #f8fcf7; }
+    .party-slot.locked .slot-num { background: var(--green-soft); color: var(--green-dark); }
     .party-slot.drop-target { border-color: #9eb69b; background: #f5f9f3; }
     .slot-num { display: grid; place-items: center; width: 21px; height: 21px; border-radius: 7px; background: #f1f3ef; color: #8a9285; font-size: 9px; font-weight: 800; }
     .slot-copy { min-width: 0; }
@@ -157,6 +160,12 @@
     .slot-filled .character-name { max-width: 120px; }
     .slot-details { display: flex; align-items: center; gap: 5px; min-width: 0; flex-wrap: wrap; margin-top: 3px; }
     .slot-details .power { font-size: 8px; }
+    .slot-actions { display: inline-flex; align-items: center; gap: 3px; flex: 0 0 auto; }
+    .slot-lock { display: inline-flex; align-items: center; justify-content: center; gap: 3px; min-width: 24px; height: 24px; padding: 0 5px; border: 1px solid transparent; border-radius: 7px; background: transparent; color: #a4aaa1; font-size: 9px; font-weight: 800; transition: border-color .15s, background .15s, color .15s; }
+    .slot-lock:hover { border-color: #d6e2d3; background: #f4f8f2; color: var(--green-dark); }
+    .slot-lock.active { padding: 0 7px; border-color: #c8dcc6; background: var(--green-soft); color: var(--green-dark); }
+    .slot-lock.active:hover { border-color: #b4cfb2; background: #e2efe0; }
+    .slot-lock svg { width: 11px; height: 11px; flex: 0 0 auto; }
     .slot-x { width: 25px; height: 25px; border: 0; border-radius: 7px; background: transparent; color: #a4aaa1; font-size: 17px; }
     .slot-x:hover { background: #fff0ee; color: var(--red); }
     .planner-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 15px; color: #929a8d; font-size: 9px; }
@@ -301,7 +310,7 @@
           </label>
         </div>
         <div class="planner-head">
-          <div><h2 class="planner-title" id="planner-heading">그룹 편성</h2><p class="planner-subtitle">편성 설정에서 파티별 역할 수와 본캐 목표, 부캐 충원을 조정하세요.</p></div>
+          <div><h2 class="planner-title" id="planner-heading">그룹 편성</h2><p class="planner-subtitle">직접 배치해 고정한 캐릭터는 유지한 채 빈 자리를 자동 편성합니다. 편성 설정에서 역할 수와 본캐 목표를 조정하세요.</p></div>
           <div class="planner-actions">
             <button class="button primary" id="auto-arrange" type="button">✦ 전체 그룹 자동 편성</button>
             <button class="button" id="clear-parties" type="button">이 던전 전체 비우기</button>
@@ -358,11 +367,12 @@
       const SECTION_LABELS = { erosion: "무스펠", tragedy: "비탄" };
       const STORAGE_KEY = "aion2-party-maker-v1";
       const emptyParties = function () { return [Array(5).fill(null), Array(5).fill(null)]; };
+      const emptyLocks = function () { return [Array(5).fill(false), Array(5).fill(false)]; };
       const defaultPartyRoles = function () { return [
         { tank: 1, dps: 2, healer: 2 },
         { tank: 1, dps: 2, healer: 2 }
       ]; };
-      const emptyGroup = function () { return { parties: emptyParties(), mainTarget: 5, fillAlts: true, partyRoles: defaultPartyRoles() }; };
+      const emptyGroup = function () { return { parties: emptyParties(), lockedSlots: emptyLocks(), mainTarget: 5, fillAlts: true, partyRoles: defaultPartyRoles() }; };
       let state = loadState();
       let activeSectionKey = SECTION_KEYS.indexOf(state.activeSection) === -1 ? "erosion" : state.activeSection;
       let editingGroupIndex = null;
@@ -412,15 +422,31 @@
             }
             if (!groups[groupIndex]) return;
             const openSlot = groups[groupIndex].parties[partyIndex].findIndex(function (item) { return !item; });
-            if (openSlot !== -1) groups[groupIndex].parties[partyIndex][openSlot] = id;
+            if (openSlot !== -1) {
+              groups[groupIndex].parties[partyIndex][openSlot] = id;
+              groups[groupIndex].lockedSlots[partyIndex][openSlot] = true;
+            }
           });
         });
         return groups;
       }
 
+      function normalizeLocks(lockedSlots, parties) {
+        const hasSavedLocks = Array.isArray(lockedSlots);
+        return [0, 1].map(function (partyIndex) {
+          const savedRow = hasSavedLocks && Array.isArray(lockedSlots[partyIndex]) ? lockedSlots[partyIndex] : null;
+          return [0, 1, 2, 3, 4].map(function (slotIndex) {
+            const hasMember = Boolean(parties[partyIndex] && parties[partyIndex][slotIndex]);
+            if (!hasMember) return false;
+            return savedRow ? Boolean(savedRow[slotIndex]) : true;
+          });
+        });
+      }
+
       function normalizeGroup(group) {
         const fallback = emptyGroup();
         const parties = normalizeParties(group && group.parties);
+        const lockedSlots = normalizeLocks(group && group.lockedSlots, parties);
         const oldRoles = group && Array.isArray(group.partyRoles) ? group.partyRoles : fallback.partyRoles;
         const partyRoles = [0, 1].map(function (partyIndex) {
           const old = oldRoles[partyIndex] || fallback.partyRoles[partyIndex];
@@ -428,6 +454,7 @@
         });
         return {
           parties: parties,
+          lockedSlots: lockedSlots,
           mainTarget: clampCount(group && group.mainTarget, 10, 5),
           fillAlts: !group || group.fillAlts !== false,
           partyRoles: partyRoles
@@ -521,14 +548,23 @@
         return "부캐 " + Math.max(1, layerIndex || 1);
       }
 
+      const LOCKED_ICON = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.2" y="7.2" width="9.6" height="6.6" rx="1.8"/><path d="M5.4 7.2V5.1a2.6 2.6 0 0 1 5.2 0v2.1"/></svg>';
+      const UNLOCKED_ICON = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.2" y="7.2" width="9.6" height="6.6" rx="1.8"/><path d="M5.4 7.2V5.1a2.6 2.6 0 0 1 4.9-1.2"/></svg>';
+
+      function isSlotLocked(groupIndex, partyIndex, slotIndex) {
+        const group = currentGroups()[groupIndex];
+        return Boolean(group && group.lockedSlots && group.lockedSlots[partyIndex] && group.lockedSlots[partyIndex][slotIndex]);
+      }
+
       function renderCharacterRow(character, layerIndex) {
         const role = ROLE_BY_JOB[character.job];
         const type = characterTypeLabel(character, layerIndex);
         const location = locate(character.id);
+        const locked = location ? isSlotLocked(location.groupIndex, location.partyIndex, location.slotIndex) : false;
         const participation = location ? (location.groupIndex + 1) + '그룹 · ' + (location.partyIndex + 1) + '파티' : '';
-        return '<div class="character-row' + (location ? ' participating' : '') + '" draggable="true" data-id="' + safe(character.id) + '" aria-label="' + safe(character.name) + ', ' + safe(character.job) + ', 전투력 ' + safe(character.power) + (location ? ', 현재 던전 파티 참여 중' : '') + '">' +
+        return '<div class="character-row' + (location ? ' participating' : '') + '" draggable="true" data-id="' + safe(character.id) + '" aria-label="' + safe(character.name) + ', ' + safe(character.job) + ', 전투력 ' + safe(character.power) + (location ? (locked ? ', 수동 고정 참여 중' : ', 현재 던전 파티 참여 중') : '') + '">' +
           '<input class="candidate-check" type="checkbox" data-action="candidate" data-id="' + safe(character.id) + '" ' + (character.candidate !== false ? "checked" : "") + ' aria-label="' + safe(character.name) + ' 자동 편성 후보 선택">' +
-          '<div class="character-main"><span class="character-name" title="' + safe(character.name) + '">' + safe(character.name) + '</span><span class="job-tag">' + safe(character.job) + '</span><span class="type-tag ' + (character.isMain ? "main" : "") + '">' + type + '</span><span class="power">' + formatPower(character.power) + '</span>' + (location ? '<span class="assignment-tag">참여 중 · ' + participation + '</span>' : '') + '</div>' +
+          '<div class="character-main"><span class="character-name" title="' + safe(character.name) + '">' + safe(character.name) + '</span><span class="job-tag">' + safe(character.job) + '</span><span class="type-tag ' + (character.isMain ? "main" : "") + '">' + type + '</span><span class="power">' + formatPower(character.power) + '</span>' + (location ? '<span class="assignment-tag' + (locked ? ' locked' : '') + '">' + (locked ? '고정 · ' : '참여 중 · ') + participation + '</span>' : '') + '</div>' +
           '<button class="roster-place" type="button" data-action="place" data-id="' + safe(character.id) + '" aria-label="' + safe(character.name) + ' 배치">＋</button>' +
           '<span hidden data-role="' + role + '"></span></div>';
       }
@@ -555,7 +591,9 @@
         const owner = accountForCharacter(character.id);
         const layerIndex = owner ? owner.characters.findIndex(function (item) { return item.id === character.id; }) : 1;
         const type = characterTypeLabel(character, layerIndex);
-        return '<div class="party-slot" data-group="' + groupIndex + '" data-party="' + partyIndex + '" data-slot="' + slotIndex + '" draggable="true" data-id="' + safe(character.id) + '"><span class="slot-num">' + (slotIndex + 1) + '</span><div class="slot-copy"><div class="slot-filled"><span class="character-name" title="' + safe(character.name) + '">' + safe(character.name) + '</span><span class="job-tag">' + safe(character.job) + '</span><span class="type-tag ' + (character.isMain ? "main" : "") + '">' + type + '</span></div><div class="slot-details"><span class="role-chip ' + role + '" style="padding:2px 5px">' + ROLE_LABEL[role] + '</span><span class="power">전투력 ' + formatPower(character.power) + '</span></div></div><button class="slot-x" type="button" data-action="remove" data-id="' + safe(character.id) + '" aria-label="파티에서 빼기">×</button></div>';
+        const locked = isSlotLocked(groupIndex, partyIndex, slotIndex);
+        const lockTitle = locked ? "수동 고정됨 · 클릭하면 자동 편성 시 재배치 허용" : "클릭하면 자동 편성 시 이 자리에 고정";
+        return '<div class="party-slot' + (locked ? ' locked' : '') + '" data-group="' + groupIndex + '" data-party="' + partyIndex + '" data-slot="' + slotIndex + '" draggable="true" data-id="' + safe(character.id) + '"><span class="slot-num">' + (slotIndex + 1) + '</span><div class="slot-copy"><div class="slot-filled"><span class="character-name" title="' + safe(character.name) + '">' + safe(character.name) + '</span><span class="job-tag">' + safe(character.job) + '</span><span class="type-tag ' + (character.isMain ? "main" : "") + '">' + type + '</span></div><div class="slot-details"><span class="role-chip ' + role + '" style="padding:2px 5px">' + ROLE_LABEL[role] + '</span><span class="power">전투력 ' + formatPower(character.power) + '</span></div></div><div class="slot-actions"><button class="slot-lock' + (locked ? ' active' : '') + '" type="button" data-action="toggle-lock" data-group="' + groupIndex + '" data-party="' + partyIndex + '" data-slot="' + slotIndex + '" title="' + lockTitle + '" aria-label="' + safe(character.name) + (locked ? ' 배치 고정 해제' : ' 배치 고정') + '" aria-pressed="' + String(locked) + '">' + (locked ? LOCKED_ICON + '고정' : UNLOCKED_ICON) + '</button><button class="slot-x" type="button" data-action="remove" data-id="' + safe(character.id) + '" aria-label="파티에서 빼기">×</button></div></div>';
       }
 
       function renderParty(party, groupIndex, partyIndex) {
@@ -572,7 +610,13 @@
           const members = group.parties.reduce(function (all, party) { return all.concat(party.filter(Boolean)); }, []).map(getCharacter).filter(Boolean);
           const mains = members.filter(function (character) { return character.isMain; }).length;
           const alts = members.length - mains;
-          return '<section class="group-section" data-group-section="' + groupIndex + '"><div class="group-head"><div class="group-heading"><span class="group-mark">G' + (groupIndex + 1) + '</span><div><h3 class="group-title">' + (groupIndex + 1) + '그룹</h3><p class="group-description">본캐 ' + mains + ' / 목표 ' + group.mainTarget + '명 · 부캐 ' + alts + '명 · ' + fillDescription + ' · 계정당 한 캐릭터</p></div></div><div class="group-actions"><button class="button small" type="button" data-action="group-settings" data-group="' + groupIndex + '">편성 설정</button><button class="button primary small" type="button" data-action="auto-group" data-group="' + groupIndex + '">이 그룹 자동 편성</button><button class="button small" type="button" data-action="clear-group" data-group="' + groupIndex + '">비우기</button></div></div><div class="parties">' + group.parties.map(function (party, partyIndex) { return renderParty(party, groupIndex, partyIndex); }).join("") + '</div></section>';
+          const lockedCount = group.parties.reduce(function (sum, party, partyIndex) {
+            return sum + party.filter(function (id, slotIndex) {
+              return id && getCharacter(id) && group.lockedSlots[partyIndex][slotIndex];
+            }).length;
+          }, 0);
+          const lockedText = lockedCount > 0 ? ' · 고정 ' + lockedCount + '명' : '';
+          return '<section class="group-section" data-group-section="' + groupIndex + '"><div class="group-head"><div class="group-heading"><span class="group-mark">G' + (groupIndex + 1) + '</span><div><h3 class="group-title">' + (groupIndex + 1) + '그룹</h3><p class="group-description">본캐 ' + mains + ' / 목표 ' + group.mainTarget + '명 · 부캐 ' + alts + '명' + lockedText + ' · ' + fillDescription + ' · 계정당 한 캐릭터</p></div></div><div class="group-actions"><button class="button small" type="button" data-action="group-settings" data-group="' + groupIndex + '">편성 설정</button><button class="button primary small" type="button" data-action="auto-group" data-group="' + groupIndex + '">이 그룹 자동 편성</button><button class="button small" type="button" data-action="clear-group" data-group="' + groupIndex + '">비우기</button></div></div><div class="parties">' + group.parties.map(function (party, partyIndex) { return renderParty(party, groupIndex, partyIndex); }).join("") + '</div></section>';
         }).join("");
       }
 
@@ -697,6 +741,9 @@
         }
         if (action === "remove") {
           removeFromParty(button.dataset.id);
+        }
+        if (action === "toggle-lock") {
+          toggleSlotLock(Number(button.dataset.group), Number(button.dataset.party), Number(button.dataset.slot));
         }
         if (action === "delete-account") {
           deleteAccount(button.dataset.account);
@@ -836,6 +883,7 @@
         const groups = currentGroups();
         if (!groups[groupIndex] || !groups[groupIndex].parties[partyIndex]) return;
         const team = groups[groupIndex].parties[partyIndex];
+        const teamLocks = groups[groupIndex].lockedSlots[partyIndex];
         const from = locate(id);
         if (slotIndex < 0) {
           slotIndex = team.findIndex(function (item) { return !item; });
@@ -857,25 +905,48 @@
           }
         }
         if (from) {
-          if (displaced) groups[from.groupIndex].parties[from.partyIndex][from.slotIndex] = displaced;
-          else groups[from.groupIndex].parties[from.partyIndex][from.slotIndex] = null;
+          if (displaced) {
+            groups[from.groupIndex].parties[from.partyIndex][from.slotIndex] = displaced;
+            groups[from.groupIndex].lockedSlots[from.partyIndex][from.slotIndex] = true;
+          } else {
+            groups[from.groupIndex].parties[from.partyIndex][from.slotIndex] = null;
+            groups[from.groupIndex].lockedSlots[from.partyIndex][from.slotIndex] = false;
+          }
         } else if (displaced) {
           groups.forEach(function (group) {
-            group.parties.forEach(function (party) {
+            group.parties.forEach(function (party, pIndex) {
               const displacedIndex = party.indexOf(displaced);
-              if (displacedIndex !== -1) party[displacedIndex] = null;
+              if (displacedIndex !== -1) {
+                party[displacedIndex] = null;
+                group.lockedSlots[pIndex][displacedIndex] = false;
+              }
             });
           });
         }
         team[slotIndex] = id;
+        teamLocks[slotIndex] = true;
         saveState();
         render();
+      }
+
+      function toggleSlotLock(groupIndex, partyIndex, slotIndex) {
+        const group = currentGroups()[groupIndex];
+        if (!group || !group.parties[partyIndex] || !group.parties[partyIndex][slotIndex]) return;
+        const next = !group.lockedSlots[partyIndex][slotIndex];
+        group.lockedSlots[partyIndex][slotIndex] = next;
+        saveState();
+        render();
+        const character = getCharacter(group.parties[partyIndex][slotIndex]);
+        const name = character ? character.name : "캐릭터";
+        showToast(next ? name + " 배치를 고정했어요. 자동 편성 시 유지됩니다." : name + " 고정을 해제했어요. 자동 편성 시 재배치될 수 있어요.");
       }
 
       function removeFromParty(id) {
         const location = locate(id);
         if (!location) return;
-        currentGroups()[location.groupIndex].parties[location.partyIndex][location.slotIndex] = null;
+        const group = currentGroups()[location.groupIndex];
+        group.parties[location.partyIndex][location.slotIndex] = null;
+        group.lockedSlots[location.partyIndex][location.slotIndex] = false;
         saveState();
         render();
       }
@@ -887,8 +958,13 @@
         state.accounts = state.accounts.filter(function (item) { return item.id !== accountId; });
         SECTION_KEYS.forEach(function (key) {
           state.sections[key].groups.forEach(function (group) {
-            group.parties.forEach(function (party) {
-              party.forEach(function (id, index) { if (ids.indexOf(id) !== -1) party[index] = null; });
+            group.parties.forEach(function (party, partyIndex) {
+              party.forEach(function (id, index) {
+                if (ids.indexOf(id) !== -1) {
+                  party[index] = null;
+                  group.lockedSlots[partyIndex][index] = false;
+                }
+              });
             });
           });
         });
@@ -900,7 +976,10 @@
 
       document.getElementById("auto-arrange").addEventListener("click", autoArrange);
       document.getElementById("clear-parties").addEventListener("click", function () {
-        currentGroups().forEach(function (group) { group.parties = emptyParties(); });
+        currentGroups().forEach(function (group) {
+          group.parties = emptyParties();
+          group.lockedSlots = emptyLocks();
+        });
         saveState();
         render();
         showToast("모든 그룹의 파티 배치를 비웠어요.");
@@ -918,6 +997,7 @@
       function clearGroup(groupIndex) {
         if (!currentGroups()[groupIndex]) return;
         currentGroups()[groupIndex].parties = emptyParties();
+        currentGroups()[groupIndex].lockedSlots = emptyLocks();
         saveState();
         render();
         showToast((groupIndex + 1) + "그룹의 파티 배치를 비웠어요.");
@@ -931,6 +1011,47 @@
         });
       }
 
+      function collectLockedIds(exceptGroupIndex) {
+        const ids = new Set();
+        currentGroups().forEach(function (group, groupIndex) {
+          if (groupIndex === exceptGroupIndex) return;
+          group.parties.forEach(function (party, partyIndex) {
+            party.forEach(function (id, slotIndex) {
+              if (id && group.lockedSlots[partyIndex][slotIndex] && getCharacter(id)) {
+                ids.add(id);
+              }
+            });
+          });
+        });
+        return ids;
+      }
+
+      function buildRemainingRolePlan(partyRoles, lockedRoleCounts, emptySlots, lockedInPartyCount) {
+        const configuredTotal = ROLE_KEYS.reduce(function (sum, role) { return sum + (partyRoles[role] || 0); }, 0);
+        const slotsToFill = Math.min(emptySlots.length, Math.max(0, configuredTotal - lockedInPartyCount));
+        if (slotsToFill <= 0) return [];
+        const remaining = {};
+        ROLE_KEYS.forEach(function (role) {
+          remaining[role] = Math.max(0, (partyRoles[role] || 0) - (lockedRoleCounts[role] || 0));
+        });
+        const chosenRoles = [];
+        while (chosenRoles.length < slotsToFill) {
+          let addedInPass = false;
+          ROLE_KEYS.forEach(function (role) {
+            if (chosenRoles.length < slotsToFill && remaining[role] > 0) {
+              chosenRoles.push(role);
+              remaining[role] -= 1;
+              addedInPass = true;
+            }
+          });
+          if (!addedInPass) break;
+        }
+        chosenRoles.sort(function (a, b) { return ROLE_KEYS.indexOf(a) - ROLE_KEYS.indexOf(b); });
+        return chosenRoles.map(function (role, index) {
+          return { role: role, slot: emptySlots[index] };
+        });
+      }
+
       function buildAutoGroupPlan(groupIndex, alreadyUsedIds) {
         const group = currentGroups()[groupIndex];
         const usedIds = new Set(alreadyUsedIds || []);
@@ -940,7 +1061,43 @@
           const account = accountForCharacter(character.id);
           return account && account.id;
         };
-        const candidates = eligibleCandidates().filter(function (character) { return !usedIds.has(character.id); });
+
+        const newParties = emptyParties();
+        const newLocks = emptyLocks();
+        const lockedRoleCounts = [
+          { tank: 0, dps: 0, healer: 0 },
+          { tank: 0, dps: 0, healer: 0 }
+        ];
+        const emptySlotsByParty = [[], []];
+        const lockedInParty = [0, 0];
+        let mainCount = 0;
+        let lockedCount = 0;
+        let autoCount = 0;
+
+        [0, 1].forEach(function (partyIndex) {
+          for (let slotIndex = 0; slotIndex < 5; slotIndex += 1) {
+            const id = group.parties[partyIndex][slotIndex];
+            const character = id && getCharacter(id);
+            const locked = Boolean(character && group.lockedSlots[partyIndex][slotIndex]);
+            if (locked) {
+              newParties[partyIndex][slotIndex] = character.id;
+              newLocks[partyIndex][slotIndex] = true;
+              chosenIds.add(character.id);
+              const owner = accountId(character);
+              if (owner) usedAccounts.add(owner);
+              lockedRoleCounts[partyIndex][ROLE_BY_JOB[character.job]] += 1;
+              lockedInParty[partyIndex] += 1;
+              lockedCount += 1;
+              if (character.isMain) mainCount += 1;
+            } else {
+              emptySlotsByParty[partyIndex].push(slotIndex);
+            }
+          }
+        });
+
+        const candidates = eligibleCandidates().filter(function (character) {
+          return !usedIds.has(character.id) && !chosenIds.has(character.id);
+        });
         const byRoleAndType = {};
         ROLE_KEYS.forEach(function (role) {
           byRoleAndType[role] = {
@@ -948,8 +1105,7 @@
             alt: candidates.filter(function (character) { return ROLE_BY_JOB[character.job] === role && !character.isMain; }).sort(function (a, b) { return b.power - a.power; })
           };
         });
-        let mainCount = 0;
-        let memberCount = 0;
+
         function take(role, type) {
           const pool = byRoleAndType[role][type];
           const character = pool.find(function (item) {
@@ -960,22 +1116,13 @@
           const owner = accountId(character);
           chosenIds.add(character.id);
           usedAccounts.add(owner);
-          memberCount += 1;
+          autoCount += 1;
           if (type === "main") mainCount += 1;
           return character;
         }
 
-        const newParties = emptyParties();
-        const roleSlots = [[], []];
-        [0, 1].forEach(function (partyIndex) {
-          let slot = 0;
-          ROLE_KEYS.forEach(function (role) {
-            const requested = group.partyRoles[partyIndex][role];
-            for (let i = 0; i < requested; i += 1) {
-              roleSlots[partyIndex].push({ role: role, slot: slot });
-              slot += 1;
-            }
-          });
+        const roleSlots = [0, 1].map(function (partyIndex) {
+          return buildRemainingRolePlan(group.partyRoles[partyIndex], lockedRoleCounts[partyIndex], emptySlotsByParty[partyIndex], lockedInParty[partyIndex]);
         });
         roleSlots.forEach(function (slots, partyIndex) {
           slots.forEach(function (entry) {
@@ -993,7 +1140,15 @@
             });
           });
         }
-        return { parties: newParties, usedIds: Array.from(chosenIds), count: memberCount, mainCount: mainCount };
+        return {
+          parties: newParties,
+          lockedSlots: newLocks,
+          usedIds: Array.from(chosenIds),
+          count: lockedCount + autoCount,
+          lockedCount: lockedCount,
+          autoCount: autoCount,
+          mainCount: mainCount
+        };
       }
 
       function usedCharacterIds(exceptGroupIndex) {
@@ -1009,18 +1164,26 @@
         syncAllGroups();
         if (!eligibleCandidates().length) { showToast("후보 선택과 전투력 기준을 확인해 주세요."); return; }
         const groups = currentGroups();
-        groups.forEach(function (group) { group.parties = emptyParties(); });
-        const usedIds = new Set();
-        let total = 0;
+        const usedIds = collectLockedIds(-1);
+        let autoTotal = 0;
+        let lockedTotal = 0;
         groups.forEach(function (group, groupIndex) {
           const plan = buildAutoGroupPlan(groupIndex, usedIds);
           group.parties = plan.parties;
+          group.lockedSlots = plan.lockedSlots;
           plan.usedIds.forEach(function (id) { usedIds.add(id); });
-          total += plan.count;
+          autoTotal += plan.autoCount;
+          lockedTotal += plan.lockedCount;
         });
         saveState();
         render();
-        showToast(SECTION_LABELS[activeSectionKey] + " " + groups.length + "개 그룹에 " + total + "명을 편성했어요.");
+        if (lockedTotal > 0 && autoTotal === 0) {
+          showToast("수동 고정 " + lockedTotal + "명을 유지했어요. 추가로 자동 편성할 후보가 없어요.");
+        } else if (lockedTotal > 0) {
+          showToast(SECTION_LABELS[activeSectionKey] + " " + groups.length + "개 그룹에 수동 고정 " + lockedTotal + "명을 유지하고 " + autoTotal + "명을 자동 편성했어요.");
+        } else {
+          showToast(SECTION_LABELS[activeSectionKey] + " " + groups.length + "개 그룹에 " + autoTotal + "명을 편성했어요.");
+        }
       }
 
       function autoArrangeGroup(groupIndex) {
@@ -1028,10 +1191,18 @@
         if (!groups[groupIndex]) return;
         const plan = buildAutoGroupPlan(groupIndex, usedCharacterIds(groupIndex));
         groups[groupIndex].parties = plan.parties;
+        groups[groupIndex].lockedSlots = plan.lockedSlots;
         saveState();
         render();
-        if (!plan.count) showToast((groupIndex + 1) + "그룹에 편성 가능한 캐릭터가 없어요.");
-        else showToast((groupIndex + 1) + "그룹에 본캐 " + plan.mainCount + "명 포함, 총 " + plan.count + "명을 편성했어요.");
+        if (plan.lockedCount > 0 && plan.autoCount === 0) {
+          showToast((groupIndex + 1) + "그룹의 수동 고정 " + plan.lockedCount + "명을 유지했어요. 추가로 편성할 수 있는 후보가 없어요.");
+        } else if (plan.lockedCount > 0) {
+          showToast((groupIndex + 1) + "그룹에 수동 고정 " + plan.lockedCount + "명을 유지하고 " + plan.autoCount + "명을 자동 편성했어요.");
+        } else if (!plan.count) {
+          showToast((groupIndex + 1) + "그룹에 편성 가능한 캐릭터가 없어요.");
+        } else {
+          showToast((groupIndex + 1) + "그룹에 본캐 " + plan.mainCount + "명 포함, 총 " + plan.count + "명을 편성했어요.");
+        }
       }
 
       let draggedId = null;
