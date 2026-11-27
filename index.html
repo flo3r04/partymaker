@@ -44,8 +44,8 @@
     .summary-label { display: block; margin-bottom: 5px; color: var(--muted); font-size: 12px; }
     .summary-value { font-size: 23px; font-weight: 800; letter-spacing: -.05em; }
     .summary-value small { margin-left: 2px; color: var(--muted); font-size: 12.5px; font-weight: 600; letter-spacing: 0; }
-    .layout { display: grid; grid-template-columns: minmax(340px, 410px) minmax(0, 1fr); align-items: start; gap: 20px; }
-    .left-column { display: grid; gap: 16px; min-width: 0; }
+    .layout { display: grid; grid-template-columns: minmax(340px, 410px) minmax(0, 1fr); align-items: stretch; gap: 20px; }
+    .left-column { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
     .panel { border: 1px solid var(--line); border-radius: 18px; background: var(--paper); box-shadow: var(--shadow); }
     .panel-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 18px 20px 13px; }
     .panel-title { margin: 0; font-size: 17px; font-weight: 800; letter-spacing: -.025em; }
@@ -89,11 +89,21 @@
     .button.ghost-green { border-color: #dce8d8; background: var(--green-soft); color: var(--green-dark); }
     .button.small { min-height: 34px; padding: 0 11px; border-radius: 9px; font-size: 12px; }
     .button.danger { color: var(--red); }
-    .roster-panel { overflow: hidden; }
-    .roster-head { align-items: center; padding-bottom: 11px; }
+    .roster-panel { position: sticky; top: 16px; max-height: calc(100vh - 32px); display: flex; flex-direction: column; overflow: hidden; }
+    .roster-head { align-items: center; padding-bottom: 10px; flex: 0 0 auto; }
     .count-pill { display: inline-flex; align-items: center; justify-content: center; min-width: 32px; height: 27px; padding: 0 9px; border-radius: 8px; background: #f0f2ee; color: #616a5e; font-size: 12px; font-weight: 800; }
-    .roster-hint { margin: 0 18px 11px; padding: 9px 11px; border-radius: 9px; background: #f6f8f4; color: var(--muted); font-size: 12px; line-height: 1.5; }
-    .roster-filter { margin: 0 14px 12px; padding: 9px 10px; border: 1px solid #e9eee6; border-radius: 12px; background: #fafcf9; display: grid; gap: 7px; }
+    .roster-hint { flex: 0 0 auto; margin: 0 14px 9px; padding: 7px 10px; border-radius: 9px; background: #f6f8f4; color: var(--muted); font-size: 11.5px; line-height: 1.45; }
+    .roster-filter { flex: 0 0 auto; margin: 0 14px 10px; padding: 8px 10px; border: 1px solid #e9eee6; border-radius: 12px; background: #fafcf9; display: grid; gap: 7px; }
+    #roster-group-banner-slot { flex: 0 0 auto; }
+    .roster-filter-groups { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; padding-bottom: 7px; border-bottom: 1px solid #edf1ea; }
+    .filter-group-label { color: #7a8476; font-size: 11px; font-weight: 750; margin-right: 2px; }
+    .filter-group-btn { display: inline-flex; align-items: center; gap: 4px; height: 26px; padding: 0 9px; border: 1px solid #dce5d8; border-radius: 7px; background: #fff; color: #4d5949; font-size: 11.5px; font-weight: 750; transition: border-color .12s, background .12s, color .12s, box-shadow .12s; }
+    .filter-group-btn:hover { border-color: #9eb89b; color: var(--green-dark); background: #f4f9f2; }
+    .filter-group-btn.active { border-color: var(--green); background: var(--green); color: #fff; box-shadow: 0 3px 8px rgba(70, 105, 76, .22); }
+    .roster-group-banner { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 0 14px 10px; padding: 8px 11px; border: 1.5px solid #8eb88a; border-radius: 10px; background: linear-gradient(135deg, #ecf7e9 0%, #f5fbf2 100%); color: #264a2c; font-size: 12px; font-weight: 750; }
+    .roster-group-banner small { color: #4f7254; font-size: 11px; font-weight: 650; margin-left: 4px; }
+    .roster-group-banner button { border: 1px solid #bdd8b9; border-radius: 6px; background: #fff; color: #365c3b; font-size: 11px; font-weight: 750; padding: 3px 8px; }
+    .roster-group-banner button:hover { background: var(--green-soft); }
     .roster-filter-roles { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
     .filter-role-btn { display: inline-flex; align-items: center; gap: 4px; height: 26px; padding: 0 9px; border: 1px solid #e3e8df; border-radius: 7px; background: #fff; color: #5b6557; font-size: 11.5px; font-weight: 750; transition: border-color .12s, background .12s, color .12s; }
     .filter-role-btn:hover { border-color: #bfd0bc; color: var(--green-dark); }
@@ -110,8 +120,10 @@
     .filter-job-btn .job-icon { width: 15px; height: 15px; }
     .filter-job-count { flex: 0 0 auto; color: var(--job-fg, #8b9487); opacity: .75; font-size: 10.5px; font-weight: 700; font-variant-numeric: tabular-nums; }
     .filter-job-btn.active .filter-job-count { opacity: 1; }
-    .roster-items { display: grid; gap: 11px; max-height: 620px; overflow: auto; padding: 0 14px 16px; }
-    .account-group { overflow: hidden; border: 1px solid #e7ece4; border-radius: 12px; background: #fff; }
+    .roster-items { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; gap: 11px; overflow-y: auto; padding: 0 14px 16px; }
+    .account-group { flex: 0 0 auto; overflow: hidden; border: 1px solid #e7ece4; border-radius: 12px; background: #fff; transition: border-color .15s, box-shadow .15s; }
+    .account-group.eligible-account { border-color: #90ba8c; box-shadow: 0 4px 14px rgba(70, 105, 76, .12); }
+    .account-group.eligible-account .account-head { background: #eff8ec; border-bottom-color: #dcebd8; }
     .account-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 9px 11px; border-bottom: 1px solid #f0f2ee; background: #fafbf9; }
     .account-name { display: flex; align-items: center; gap: 6px; min-width: 0; font-size: 13px; font-weight: 800; }
     .account-name span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -126,6 +138,9 @@
     .character-row:hover { background: #fbfcfa; }
     .character-row.participating { border-left: 3px solid #5f8960; padding-left: 7px; background: #edf5e9; }
     .character-row.participating:hover { background: #e5f0df; }
+    .character-row.eligible-for-group { border-left: 4px solid #3f8a4b; padding-left: 6px; background: #f6fcf4; }
+    .character-row.eligible-for-group:hover { background: #eaf7e6; }
+    .eligible-tag { display: inline-flex; align-items: center; min-height: 21px; padding: 0 7px; border-radius: 6px; background: #3f8a4b; color: #fff; font-size: 10.5px; font-weight: 800; white-space: nowrap; letter-spacing: -.01em; }
     .assignment-tag { display: inline-flex; align-items: center; min-height: 21px; padding: 0 7px; border-radius: 6px; background: #dcebd7; color: #3c6940; font-size: 10.5px; font-weight: 800; white-space: nowrap; }
     .assignment-tag.locked { background: #d5e6cf; color: var(--green-dark); }
     .character-row.dragging, .party-slot.dragging { opacity: .45; }
@@ -201,9 +216,12 @@
     .target-control { display: flex; align-items: center; gap: 7px; margin-left: auto; color: #788073; font-size: 12px; font-weight: 700; }
     .target-select { width: 96px; height: 34px; padding: 0 9px; border-radius: 8px; font-size: 12px; }
     .groups { display: grid; gap: 16px; }
-    .group-section { padding: 16px; border: 1px solid #e6ebe3; border-radius: 17px; background: #f8faf7; }
+    .group-section { padding: 16px; border: 1px solid #e6ebe3; border-radius: 17px; background: #f8faf7; transition: border-color .15s, box-shadow .15s, background .15s; }
+    .group-section.selected-group { border-color: var(--green); background: #f3faf1; box-shadow: 0 0 0 3px rgba(70, 105, 76, .14); }
     .group-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 2px 12px; flex-wrap: wrap; }
-    .group-heading { display: flex; align-items: center; gap: 11px; min-width: 0; }
+    .group-heading { display: flex; align-items: center; gap: 11px; min-width: 0; cursor: pointer; border-radius: 10px; padding: 3px 6px 3px 3px; margin: -3px 0 -3px -3px; transition: background .12s; }
+    .group-heading:hover { background: rgba(70, 105, 76, .06); }
+    .group-select-btn.active { border-color: var(--green); background: var(--green-soft); color: var(--green-dark); box-shadow: inset 0 0 0 1px var(--green); }
     .group-mark { display: grid; place-items: center; width: 36px; height: 36px; flex: 0 0 auto; border-radius: 10px; background: var(--green); color: #fff; font-size: 13.5px; font-weight: 800; }
     .group-title { margin: 0; font-size: 17px; font-weight: 850; letter-spacing: -.025em; }
     .group-description { margin: 3px 0 0; color: var(--muted); font-size: 12.5px; }
@@ -333,7 +351,7 @@
       .summary { margin-top: 16px; }
       .summary-card { flex: 1; min-width: 0; }
       .layout { grid-template-columns: 1fr; }
-      .left-column { grid-template-columns: 1fr; }
+      .roster-panel { position: static; max-height: none; }
       .roster-items { max-height: 460px; }
       .planner { padding: 16px 14px; }
       .planner-actions { width: 100%; }
@@ -427,6 +445,7 @@
           </div>
           <p class="roster-hint">한 그룹 안에서는 1·2파티를 통틀어 계정당 한 캐릭터만 들어갈 수 있어요. 본캐·부캐 표시로 캐릭터 종류를 확인하세요.</p>
           <div class="roster-filter" id="roster-filter" aria-label="직업별 명단 필터"></div>
+          <div id="roster-group-banner-slot"></div>
           <div class="roster-items" id="roster-items" data-roster-drop></div>
         </section>
       </div>
@@ -646,6 +665,7 @@
       let addingAltAccountId = null;
       let editingCharId = null;
       const selectedRosterJobs = new Set();
+      let selectedRosterGroupIndex = null;
       let toastTimer = 0;
 
       function getJobIconSrc(job) {
@@ -976,16 +996,20 @@
         '</form>';
       }
 
-      function renderCharacterRow(account, character, layerIndex) {
+      function renderCharacterRow(account, character, layerIndex, isEligibleForSelectedGroup) {
         const role = ROLE_BY_JOB[character.job];
         const type = characterTypeLabel(character, layerIndex);
         const location = locate(character.id);
         const locked = location ? isSlotLocked(location.groupIndex, location.partyIndex, location.slotIndex) : false;
         const participation = location ? (location.groupIndex + 1) + '그룹 · ' + (location.partyIndex + 1) + '파티' : '';
         const isEditing = editingCharId === character.id;
-        return '<div class="character-row' + (location ? ' participating' : '') + '" data-drag-char="true" data-id="' + safe(character.id) + '" aria-label="' + safe(character.name) + ', ' + safe(character.job) + ', 전투력 ' + safe(character.power) + (location ? (locked ? ', 수동 고정 참여 중' : ', 현재 던전 파티 참여 중') : '') + '">' +
+        const rowClass = 'character-row' + (location ? ' participating' : (isEligibleForSelectedGroup ? ' eligible-for-group' : ''));
+        const statusTag = location
+          ? '<span class="assignment-tag' + (locked ? ' locked' : '') + '">' + (locked ? '고정 · ' : '참여 중 · ') + participation + '</span>'
+          : (isEligibleForSelectedGroup ? '<span class="eligible-tag">' + (selectedRosterGroupIndex + 1) + '그룹 투입 가능</span>' : '');
+        return '<div class="' + rowClass + '" data-drag-char="true" data-id="' + safe(character.id) + '" aria-label="' + safe(character.name) + ', ' + safe(character.job) + ', 전투력 ' + safe(character.power) + (location ? (locked ? ', 수동 고정 참여 중' : ', 현재 던전 파티 참여 중') : '') + '">' +
           '<input class="candidate-check" type="checkbox" data-action="candidate" data-id="' + safe(character.id) + '" ' + (character.candidate !== false ? "checked" : "") + ' aria-label="' + safe(character.name) + ' 자동 편성 후보 선택">' +
-          '<div class="character-main"><span class="character-name" title="' + safe(character.name) + '">' + safe(character.name) + '</span>' + renderJobTag(character.job) + '<span class="type-tag ' + (character.isMain ? "main" : "") + '">' + type + '</span><span class="power">' + formatPower(character.power) + '</span>' + (location ? '<span class="assignment-tag' + (locked ? ' locked' : '') + '">' + (locked ? '고정 · ' : '참여 중 · ') + participation + '</span>' : '') + '</div>' +
+          '<div class="character-main"><span class="character-name" title="' + safe(character.name) + '">' + safe(character.name) + '</span>' + renderJobTag(character.job) + '<span class="type-tag ' + (character.isMain ? "main" : "") + '">' + type + '</span><span class="power">' + formatPower(character.power) + '</span>' + statusTag + '</div>' +
           '<div class="roster-row-actions">' +
             '<button class="roster-edit' + (isEditing ? ' active' : '') + '" type="button" data-action="toggle-edit-char" data-id="' + safe(character.id) + '" title="캐릭터 수정" aria-label="' + safe(character.name) + ' 수정">✎</button>' +
             '<button class="roster-place" type="button" data-action="place" data-id="' + safe(character.id) + '" title="파티에 빠른 배치" aria-label="' + safe(character.name) + ' 배치">＋</button>' +
@@ -1004,14 +1028,32 @@
         return selectedRosterJobs.size === roleJobs.length && roleJobs.every(function (job) { return selectedRosterJobs.has(job); });
       }
 
+      function isCharacterEligibleForGroup(account, character, groupIndex) {
+        if (!account || !character || groupIndex === null || groupIndex === undefined) return true;
+        if (groupHasAccountCharacter(groupIndex, account.id)) return false;
+        if (locate(character.id)) return false;
+        return true;
+      }
+
       function renderRosterFilter() {
         const container = document.getElementById("roster-filter");
         if (!container) return;
+        const groups = currentGroups();
+        const hasGroupFilter = selectedRosterGroupIndex !== null && selectedRosterGroupIndex >= 0 && selectedRosterGroupIndex < groups.length;
         const countsByJob = {};
         JOBS.forEach(function (job) { countsByJob[job] = 0; });
-        characters().forEach(function (character) {
-          if (countsByJob[character.job] !== undefined) countsByJob[character.job] += 1;
+        state.accounts.forEach(function (account) {
+          account.characters.forEach(function (character) {
+            if (hasGroupFilter && !isCharacterEligibleForGroup(account, character, selectedRosterGroupIndex)) return;
+            if (countsByJob[character.job] !== undefined) countsByJob[character.job] += 1;
+          });
         });
+        const groupButtons =
+          '<button class="filter-group-btn' + (!hasGroupFilter ? ' active' : '') + '" type="button" data-action="select-roster-group" data-group="all" aria-pressed="' + String(!hasGroupFilter) + '">전체</button>' +
+          groups.map(function (_g, idx) {
+            const active = hasGroupFilter && selectedRosterGroupIndex === idx;
+            return '<button class="filter-group-btn' + (active ? ' active' : '') + '" type="button" data-action="select-roster-group" data-group="' + idx + '" aria-pressed="' + String(active) + '">' + (idx + 1) + '그룹</button>';
+          }).join("");
         const roleButtons = [
           { key: "all", label: "전체" },
           { key: "tank", label: "탱커" },
@@ -1021,7 +1063,7 @@
           const active = isRoleFilterActive(item.key);
           return '<button class="filter-role-btn' + (active ? ' active' : '') + '" type="button" data-action="filter-role" data-role="' + item.key + '" aria-pressed="' + String(active) + '">' + item.label + '</button>';
         }).join("");
-        const resetBtn = selectedRosterJobs.size > 0
+        const resetBtn = (selectedRosterJobs.size > 0 || hasGroupFilter)
           ? '<button class="filter-reset-btn" type="button" data-action="filter-reset">초기화</button>'
           : '';
         const jobButtons = JOBS.map(function (job) {
@@ -1033,48 +1075,84 @@
           '</button>';
         }).join("");
         container.innerHTML =
+          '<div class="roster-filter-groups"><span class="filter-group-label">투입 가능</span>' + groupButtons + '</div>' +
           '<div class="roster-filter-roles">' + roleButtons + resetBtn + '</div>' +
           '<div class="roster-filter-jobs">' + jobButtons + '</div>';
       }
 
       function renderRoster() {
+        const groups = currentGroups();
+        if (selectedRosterGroupIndex !== null && (selectedRosterGroupIndex < 0 || selectedRosterGroupIndex >= groups.length)) {
+          selectedRosterGroupIndex = null;
+        }
         renderRosterFilter();
         const root = document.getElementById("roster-items");
         const countEl = document.getElementById("roster-count");
+        const bannerSlot = document.getElementById("roster-group-banner-slot");
         const totalChars = characters().length;
-        const hasFilter = selectedRosterJobs.size > 0;
+        const hasJobFilter = selectedRosterJobs.size > 0;
+        const hasGroupFilter = selectedRosterGroupIndex !== null;
+        const hasAnyFilter = hasJobFilter || hasGroupFilter;
         if (!state.accounts.length) {
           if (countEl) countEl.textContent = "0명";
+          if (bannerSlot) bannerSlot.innerHTML = "";
           root.innerHTML = '<div class="empty-roster"><div class="empty-icon">＋</div><strong>아직 등록된 캐릭터가 없어요</strong><span>왼쪽에서 본캐 정보를 입력하고<br>명단에 등록해 보세요.</span></div>';
           return;
         }
         let matchedTotal = 0;
+        let matchedAccounts = 0;
         const cards = [];
         state.accounts.forEach(function (account) {
           const main = account.characters.find(function (character) { return character.isMain; });
           const isAddingAlt = addingAltAccountId === account.id;
           const visibleEntries = [];
           account.characters.forEach(function (character, index) {
-            if (!hasFilter || selectedRosterJobs.has(character.job) || editingCharId === character.id) {
-              visibleEntries.push({ character: character, index: index });
+            const isEditing = editingCharId === character.id;
+            const passGroup = !hasGroupFilter || isCharacterEligibleForGroup(account, character, selectedRosterGroupIndex);
+            const passJob = !hasJobFilter || selectedRosterJobs.has(character.job);
+            if ((passGroup && passJob) || isEditing) {
+              visibleEntries.push({
+                character: character,
+                index: index,
+                eligible: hasGroupFilter && isCharacterEligibleForGroup(account, character, selectedRosterGroupIndex)
+              });
             }
           });
           if (!visibleEntries.length && !isAddingAlt) return;
           matchedTotal += visibleEntries.length;
-          const countLabel = hasFilter
+          if (visibleEntries.length) matchedAccounts += 1;
+          const countLabel = hasAnyFilter
             ? visibleEntries.length + ' / ' + account.characters.length + '명'
             : account.characters.length + '명';
+          const accountClass = 'account-group' + (hasGroupFilter && visibleEntries.some(function (e) { return e.eligible; }) ? ' eligible-account' : '');
           cards.push(
-            '<div class="account-group"><div class="account-head"><div class="account-name"><span title="' + safe(main ? main.name : "캐릭터") + '">' + safe(main ? main.name : "캐릭터") + ' 계정</span><small>' + countLabel + '</small></div><div class="account-actions"><button class="account-add-alt' + (isAddingAlt ? ' active' : '') + '" type="button" data-action="toggle-account-alt" data-account="' + safe(account.id) + '">＋ 부캐 추가</button><button class="account-delete" type="button" data-action="delete-account" data-account="' + safe(account.id) + '">계정 삭제</button></div></div>' +
-            visibleEntries.map(function (entry) { return renderCharacterRow(account, entry.character, entry.index); }).join("") +
+            '<div class="' + accountClass + '"><div class="account-head"><div class="account-name"><span title="' + safe(main ? main.name : "캐릭터") + '">' + safe(main ? main.name : "캐릭터") + ' 계정</span><small>' + countLabel + '</small></div><div class="account-actions"><button class="account-add-alt' + (isAddingAlt ? ' active' : '') + '" type="button" data-action="toggle-account-alt" data-account="' + safe(account.id) + '">＋ 부캐 추가</button><button class="account-delete" type="button" data-action="delete-account" data-account="' + safe(account.id) + '">계정 삭제</button></div></div>' +
+            visibleEntries.map(function (entry) { return renderCharacterRow(account, entry.character, entry.index, entry.eligible); }).join("") +
             (isAddingAlt ? renderInlineAddAltForm(account) : '') + '</div>'
           );
         });
+        if (bannerSlot) {
+          if (hasGroupFilter) {
+            bannerSlot.innerHTML =
+              '<div class="roster-group-banner">' +
+                '<span>✦ ' + (selectedRosterGroupIndex + 1) + '그룹 투입 가능 인원<small>' + matchedAccounts + '개 계정 · ' + matchedTotal + '명</small></span>' +
+                '<button type="button" data-action="select-roster-group" data-group="all">해제</button>' +
+              '</div>';
+          } else {
+            bannerSlot.innerHTML = "";
+          }
+        }
         if (countEl) {
-          countEl.textContent = hasFilter ? (matchedTotal + " / " + totalChars + "명") : (totalChars + "명");
+          countEl.textContent = hasAnyFilter ? (matchedTotal + " / " + totalChars + "명") : (totalChars + "명");
         }
         if (!cards.length) {
-          root.innerHTML = '<div class="empty-roster"><div class="empty-icon">⌕</div><strong>선택한 직업의 캐릭터가 없어요</strong><span>다른 직업을 선택하거나 필터를 초기화해 보세요.</span><div style="margin-top:12px"><button class="button small ghost-green" type="button" data-action="filter-reset">전체 보기</button></div></div>';
+          const emptyTitle = hasGroupFilter
+            ? (selectedRosterGroupIndex + 1) + "그룹에 추가 투입 가능한 캐릭터가 없어요"
+            : "선택한 직업의 캐릭터가 없어요";
+          const emptySub = hasGroupFilter
+            ? "이미 모든 계정이 참여 중이거나 선택한 직업의 남은 캐릭터가 없습니다."
+            : "다른 직업을 선택하거나 필터를 초기화해 보세요.";
+          root.innerHTML = '<div class="empty-roster"><div class="empty-icon">⌕</div><strong>' + emptyTitle + '</strong><span>' + emptySub + '</span><div style="margin-top:12px"><button class="button small ghost-green" type="button" data-action="filter-reset">전체 보기</button></div></div>';
           return;
         }
         root.innerHTML = cards.join("");
@@ -1115,7 +1193,8 @@
             }).length;
           }, 0);
           const lockedText = lockedCount > 0 ? ' · 고정 ' + lockedCount + '명' : '';
-          return '<section class="group-section" data-group-section="' + groupIndex + '"><div class="group-head"><div class="group-heading"><span class="group-mark">G' + (groupIndex + 1) + '</span><div><h3 class="group-title">' + (groupIndex + 1) + '그룹</h3><p class="group-description">본캐 ' + mains + ' / 목표 ' + group.mainTarget + '명 · 부캐 ' + alts + '명' + lockedText + ' · ' + fillDescription + ' · ' + flexDescription + ' · 계정당 한 캐릭터</p></div></div><div class="group-actions"><button class="button small" type="button" data-action="export-group-image" data-group="' + groupIndex + '">PNG</button><button class="button small" type="button" data-action="group-settings" data-group="' + groupIndex + '">편성 설정</button><button class="button primary small" type="button" data-action="auto-group" data-group="' + groupIndex + '">이 그룹 자동 편성</button><button class="button small" type="button" data-action="clear-group" data-group="' + groupIndex + '">비우기</button></div></div><div class="parties">' + group.parties.map(function (party, partyIndex) { return renderParty(party, groupIndex, partyIndex); }).join("") + '</div></section>';
+          const isSelectedGroup = selectedRosterGroupIndex === groupIndex;
+          return '<section class="group-section' + (isSelectedGroup ? ' selected-group' : '') + '" data-group-section="' + groupIndex + '"><div class="group-head"><div class="group-heading" data-action="select-roster-group" data-group="' + groupIndex + '" title="클릭하면 이 그룹에 투입 가능한 인원을 명단에서 확인합니다"><span class="group-mark">G' + (groupIndex + 1) + '</span><div><h3 class="group-title">' + (groupIndex + 1) + '그룹</h3><p class="group-description">본캐 ' + mains + ' / 목표 ' + group.mainTarget + '명 · 부캐 ' + alts + '명' + lockedText + ' · ' + fillDescription + ' · ' + flexDescription + ' · 계정당 한 캐릭터</p></div></div><div class="group-actions"><button class="button small group-select-btn' + (isSelectedGroup ? ' active' : '') + '" type="button" data-action="select-roster-group" data-group="' + groupIndex + '" aria-pressed="' + String(isSelectedGroup) + '">' + (isSelectedGroup ? '✓ 투입 가능 보는 중' : '투입 가능') + '</button><button class="button small" type="button" data-action="export-group-image" data-group="' + groupIndex + '">PNG</button><button class="button small" type="button" data-action="group-settings" data-group="' + groupIndex + '">편성 설정</button><button class="button primary small" type="button" data-action="auto-group" data-group="' + groupIndex + '">이 그룹 자동 편성</button><button class="button small" type="button" data-action="clear-group" data-group="' + groupIndex + '">비우기</button></div></div><div class="parties">' + group.parties.map(function (party, partyIndex) { return renderParty(party, groupIndex, partyIndex); }).join("") + '</div></section>';
         }).join("");
       }
 
@@ -1319,7 +1398,26 @@
         }
         if (action === "filter-reset") {
           selectedRosterJobs.clear();
+          selectedRosterGroupIndex = null;
           renderRoster();
+          renderGroups();
+        }
+        if (action === "select-roster-group") {
+          const rawGroup = button.dataset.group;
+          if (rawGroup === "all") {
+            selectedRosterGroupIndex = null;
+          } else {
+            const idx = Number(rawGroup);
+            selectedRosterGroupIndex = selectedRosterGroupIndex === idx ? null : idx;
+            if (selectedRosterGroupIndex !== null) {
+              const targetSelect = document.getElementById("target-group");
+              if (targetSelect && idx >= 0 && idx < currentGroups().length) {
+                targetSelect.value = String(idx);
+              }
+            }
+          }
+          renderRoster();
+          renderGroups();
         }
         if (action === "auto-group") {
           autoArrangeGroup(Number(button.dataset.group));
