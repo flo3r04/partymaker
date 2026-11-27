@@ -174,9 +174,36 @@
     .local-note::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: #7c9b72; }
     .toast { position: fixed; z-index: 5; right: 24px; bottom: 22px; max-width: min(380px, calc(100vw - 32px)); padding: 12px 16px; transform: translateY(12px); border-radius: 11px; background: #26352a; box-shadow: 0 8px 24px #17241b30; color: #fff; font-size: 11px; opacity: 0; pointer-events: none; transition: .2s ease; }
     .toast.show { transform: translateY(0); opacity: 1; }
-    #group-settings-dialog, #transfer-dialog { width: min(720px, calc(100vw - 28px)); max-height: min(88vh, 820px); overflow: auto; padding: 0; border: 1px solid #e6ebe2; border-radius: 20px; background: #fff; color: var(--ink); box-shadow: 0 24px 80px #1e2a1e40; }
+    #group-settings-dialog, #transfer-dialog, #image-export-dialog, #tutorial-dialog { width: min(720px, calc(100vw - 28px)); max-height: min(88vh, 820px); overflow: auto; padding: 0; border: 1px solid #e6ebe2; border-radius: 20px; background: #fff; color: var(--ink); box-shadow: 0 24px 80px #1e2a1e40; }
     #transfer-dialog { width: min(640px, calc(100vw - 28px)); }
-    #group-settings-dialog::backdrop, #transfer-dialog::backdrop { background: #17201880; backdrop-filter: blur(3px); }
+    #image-export-dialog { width: min(860px, calc(100vw - 28px)); }
+    #tutorial-dialog { width: min(580px, calc(100vw - 28px)); }
+    #group-settings-dialog::backdrop, #transfer-dialog::backdrop, #image-export-dialog::backdrop, #tutorial-dialog::backdrop { background: #17201880; backdrop-filter: blur(3px); }
+    .tutorial-steps-nav { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; margin-bottom: 16px; }
+    .tutorial-step-tab { display: flex; align-items: center; justify-content: center; gap: 5px; height: 32px; padding: 0 8px; border: 1px solid #e6ebe3; border-radius: 9px; background: #fafbf9; color: #7a8376; font-size: 10px; font-weight: 750; transition: border-color .15s, background .15s, color .15s; }
+    .tutorial-step-tab:hover { border-color: #c9d9c7; color: var(--green-dark); }
+    .tutorial-step-tab.active { border-color: var(--green); background: var(--green); color: #fff; }
+    .tutorial-stage { padding: 18px; border: 1px solid #e8ede5; border-radius: 15px; background: #fafcf9; }
+    .tutorial-badge { display: inline-flex; align-items: center; gap: 6px; margin-bottom: 10px; padding: 4px 9px; border-radius: 999px; background: var(--green-soft); color: var(--green-dark); font-size: 10px; font-weight: 800; }
+    .tutorial-stage h3 { margin: 0 0 8px; font-size: 16px; font-weight: 850; letter-spacing: -.03em; color: var(--ink); }
+    .tutorial-lead { margin: 0 0 14px; color: #566053; font-size: 12px; line-height: 1.65; }
+    .tutorial-visual { margin: 0 0 14px; padding: 12px 13px; border: 1px solid #e4eae1; border-radius: 12px; background: #fff; display: grid; gap: 8px; }
+    .tutorial-visual-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 10px; border: 1px solid #edf0eb; border-radius: 9px; background: #fcfdfb; font-size: 11px; }
+    .tutorial-visual-row.highlight { border-color: #c6dac4; background: #f5fbf4; }
+    .tutorial-visual-left { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; min-width: 0; font-weight: 750; }
+    .tutorial-points { margin: 0; padding-left: 17px; display: grid; gap: 6px; color: #5b6457; font-size: 11px; line-height: 1.6; }
+    .tutorial-points b { color: var(--ink); }
+    .tutorial-footer { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 16px; padding-top: 14px; border-top: 1px solid #eef1ec; }
+    .tutorial-dismiss { display: inline-flex; align-items: center; gap: 6px; color: #6f786b; font-size: 10px; font-weight: 650; cursor: pointer; }
+    .tutorial-dismiss input { margin: 0; accent-color: var(--green); }
+    .tutorial-nav-actions { display: flex; align-items: center; gap: 7px; }
+    .image-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 14px; padding: 12px 14px; border: 1px solid #e9eee6; border-radius: 13px; background: #fafcf9; }
+    .image-scope-label { display: flex; align-items: center; gap: 8px; color: #515b4e; font-size: 11px; font-weight: 800; }
+    .image-scope-select { min-width: 140px; height: 34px; padding: 0 10px; border: 1px solid #e3e8df; border-radius: 8px; background: #fff; color: var(--ink); font-size: 11px; font-weight: 700; outline: none; }
+    .image-scope-select:focus { border-color: #84a18a; box-shadow: 0 0 0 3px #edf4e9; }
+    .image-toolbar-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+    .image-preview-frame { overflow: auto; max-height: 56vh; padding: 12px; border: 1px solid #e6ebe3; border-radius: 14px; background: #f2f4ef; text-align: center; }
+    .image-preview-frame img { display: block; width: 100%; height: auto; border-radius: 10px; box-shadow: 0 10px 28px rgba(32, 39, 31, .08); }
     .transfer-card { padding: 15px; border: 1px solid #e9eee6; border-radius: 13px; background: #fafcf9; margin-bottom: 14px; }
     .transfer-card:last-of-type { margin-bottom: 0; }
     .transfer-card-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
@@ -248,6 +275,13 @@
       .settings-main, .party-settings-grid { grid-template-columns: 1fr; }
       .settings-content { padding: 18px 14px; }
       .transfer-actions .button { flex: 1; }
+      .image-toolbar { align-items: stretch; flex-direction: column; }
+      .image-scope-label { justify-content: space-between; }
+      .image-toolbar-actions .button { flex: 1; }
+      .tutorial-steps-nav { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .tutorial-footer { flex-direction: column; align-items: stretch; }
+      .tutorial-nav-actions { justify-content: flex-end; }
+      .tutorial-nav-actions .button { flex: 1; }
     }
     @media (max-width: 380px) {
       .field-grid { grid-template-columns: minmax(0, 1fr) 99px; }
@@ -264,6 +298,7 @@
       <div class="brand"><div class="brand-mark">A</div><div class="brand-name">아이온2 파티 메이커</div></div>
       <div class="topbar-right">
         <div class="top-note">파티를 짜는 시간을 줄이고, 전투 준비에 집중하세요.</div>
+        <button class="button small" id="open-tutorial" type="button">? 사용법</button>
         <button class="button ghost-green small" id="open-transfer" type="button">⇄ 코드 저장 · 불러오기</button>
       </div>
     </header>
@@ -330,6 +365,7 @@
           <div><h2 class="planner-title" id="planner-heading">그룹 편성</h2><p class="planner-subtitle">직접 배치해 고정한 캐릭터는 유지한 채 빈 자리를 자동 편성합니다. 편성 설정에서 역할 수와 본캐 목표를 조정하세요.</p></div>
           <div class="planner-actions">
             <button class="button primary" id="auto-arrange" type="button">✦ 전체 그룹 자동 편성</button>
+            <button class="button ghost-green" id="open-image-export" type="button">🖼 PNG 공유</button>
             <button class="button" id="clear-parties" type="button">이 던전 전체 비우기</button>
           </div>
         </div>
@@ -409,6 +445,55 @@
       </section>
       <div class="settings-footer">
         <button class="button" id="cancel-transfer" type="button">닫기</button>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog id="image-export-dialog" aria-labelledby="image-export-title">
+    <div class="settings-content">
+      <div class="settings-head">
+        <div>
+          <h2 id="image-export-title">파티 편성표 PNG 공유</h2>
+          <p>편성된 파티를 한눈에 볼 수 있는 고해상도 요약 이미지로 저장하거나 클립보드에 복사해 바로 공유할 수 있어요.</p>
+        </div>
+        <button class="settings-close" id="close-image-export" type="button" aria-label="창 닫기">×</button>
+      </div>
+      <div class="image-toolbar">
+        <label class="image-scope-label" for="image-export-scope">출력 범위
+          <select class="image-scope-select" id="image-export-scope"></select>
+        </label>
+        <div class="image-toolbar-actions">
+          <button class="button primary small" id="download-party-png" type="button">PNG 파일 저장</button>
+          <button class="button ghost-green small" id="copy-party-png" type="button">이미지 클립보드 복사</button>
+        </div>
+      </div>
+      <p class="transfer-status" id="image-export-status" role="status" style="margin: 0 2px 10px"></p>
+      <div class="image-preview-frame">
+        <img id="image-export-preview" alt="파티 편성표 PNG 미리보기">
+      </div>
+      <div class="settings-footer">
+        <button class="button" id="cancel-image-export" type="button">닫기</button>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog id="tutorial-dialog" aria-labelledby="tutorial-title">
+    <div class="settings-content">
+      <div class="settings-head">
+        <div>
+          <h2 id="tutorial-title">아이온2 파티 메이커 사용 가이드</h2>
+          <p>핵심 기능을 4단계로 빠르게 익혀 보세요. 상단 <b>? 사용법</b> 버튼으로 언제든 다시 볼 수 있어요.</p>
+        </div>
+        <button class="settings-close" id="close-tutorial" type="button" aria-label="튜토리얼 닫기">×</button>
+      </div>
+      <div class="tutorial-steps-nav" id="tutorial-steps-nav" role="tablist" aria-label="가이드 단계"></div>
+      <div class="tutorial-stage" id="tutorial-stage"></div>
+      <div class="tutorial-footer">
+        <label class="tutorial-dismiss"><input id="tutorial-dont-show" type="checkbox" checked>다음 접속 시 자동으로 열지 않기</label>
+        <div class="tutorial-nav-actions">
+          <button class="button small" id="tutorial-prev" type="button">이전</button>
+          <button class="button primary small" id="tutorial-next" type="button">다음 →</button>
+        </div>
       </div>
     </div>
   </dialog>
@@ -672,7 +757,7 @@
             }).length;
           }, 0);
           const lockedText = lockedCount > 0 ? ' · 고정 ' + lockedCount + '명' : '';
-          return '<section class="group-section" data-group-section="' + groupIndex + '"><div class="group-head"><div class="group-heading"><span class="group-mark">G' + (groupIndex + 1) + '</span><div><h3 class="group-title">' + (groupIndex + 1) + '그룹</h3><p class="group-description">본캐 ' + mains + ' / 목표 ' + group.mainTarget + '명 · 부캐 ' + alts + '명' + lockedText + ' · ' + fillDescription + ' · 계정당 한 캐릭터</p></div></div><div class="group-actions"><button class="button small" type="button" data-action="group-settings" data-group="' + groupIndex + '">편성 설정</button><button class="button primary small" type="button" data-action="auto-group" data-group="' + groupIndex + '">이 그룹 자동 편성</button><button class="button small" type="button" data-action="clear-group" data-group="' + groupIndex + '">비우기</button></div></div><div class="parties">' + group.parties.map(function (party, partyIndex) { return renderParty(party, groupIndex, partyIndex); }).join("") + '</div></section>';
+          return '<section class="group-section" data-group-section="' + groupIndex + '"><div class="group-head"><div class="group-heading"><span class="group-mark">G' + (groupIndex + 1) + '</span><div><h3 class="group-title">' + (groupIndex + 1) + '그룹</h3><p class="group-description">본캐 ' + mains + ' / 목표 ' + group.mainTarget + '명 · 부캐 ' + alts + '명' + lockedText + ' · ' + fillDescription + ' · 계정당 한 캐릭터</p></div></div><div class="group-actions"><button class="button small" type="button" data-action="export-group-image" data-group="' + groupIndex + '">PNG</button><button class="button small" type="button" data-action="group-settings" data-group="' + groupIndex + '">편성 설정</button><button class="button primary small" type="button" data-action="auto-group" data-group="' + groupIndex + '">이 그룹 자동 편성</button><button class="button small" type="button" data-action="clear-group" data-group="' + groupIndex + '">비우기</button></div></div><div class="parties">' + group.parties.map(function (party, partyIndex) { return renderParty(party, groupIndex, partyIndex); }).join("") + '</div></section>';
         }).join("");
       }
 
@@ -812,6 +897,9 @@
         }
         if (action === "group-settings") {
           openGroupSettings(Number(button.dataset.group));
+        }
+        if (action === "export-group-image") {
+          openImageExportDialog(String(button.dataset.group));
         }
       });
 
@@ -1755,8 +1843,663 @@
         }
       }
 
+      let latestExportCanvas = null;
+      let latestExportDataUrl = "";
+      let latestExportFilename = "";
+
+      function drawRoundedRect(ctx, x, y, w, h, r) {
+        const radius = Math.min(r, w / 2, h / 2);
+        ctx.beginPath();
+        ctx.moveTo(x + radius, y);
+        ctx.arcTo(x + w, y, x + w, y + h, radius);
+        ctx.arcTo(x + w, y + h, x, y + h, radius);
+        ctx.arcTo(x, y + h, x, y, radius);
+        ctx.arcTo(x, y, x + w, y, radius);
+        ctx.closePath();
+      }
+
+      function fillStrokeRoundedRect(ctx, x, y, w, h, r, fill, stroke, lineWidth, dashed) {
+        ctx.save();
+        drawRoundedRect(ctx, x, y, w, h, r);
+        if (fill) {
+          ctx.fillStyle = fill;
+          ctx.fill();
+        }
+        if (stroke) {
+          ctx.strokeStyle = stroke;
+          ctx.lineWidth = lineWidth || 1;
+          if (dashed) ctx.setLineDash([5, 4]);
+          ctx.stroke();
+        }
+        ctx.restore();
+      }
+
+      function truncateCanvasText(ctx, text, maxWidth) {
+        const str = String(text || "");
+        if (maxWidth <= 0) return "";
+        if (ctx.measureText(str).width <= maxWidth) return str;
+        const ellipsis = "…";
+        let end = str.length;
+        while (end > 1 && ctx.measureText(str.slice(0, end) + ellipsis).width > maxWidth) {
+          end -= 1;
+        }
+        return str.slice(0, Math.max(1, end)) + ellipsis;
+      }
+
+      function drawCanvasPill(ctx, x, y, text, font, bg, fg, padX, height, radius) {
+        ctx.save();
+        ctx.font = font;
+        const textWidth = ctx.measureText(text).width;
+        const w = Math.ceil(textWidth + padX * 2);
+        fillStrokeRoundedRect(ctx, x, y, w, height, radius || 6, bg, null);
+        ctx.fillStyle = fg;
+        ctx.textAlign = "left";
+        ctx.textBaseline = "middle";
+        ctx.fillText(text, x + padX, y + height / 2 + 0.5);
+        ctx.restore();
+        return w;
+      }
+
+      function formatExportDate() {
+        const now = new Date();
+        const yyyy = now.getFullYear();
+        const mm = String(now.getMonth() + 1).padStart(2, "0");
+        const dd = String(now.getDate()).padStart(2, "0");
+        return { display: yyyy + "." + mm + "." + dd, file: yyyy + mm + dd };
+      }
+
+      function renderPartySummaryCanvas(scopeValue) {
+        const groups = currentGroups();
+        const selectedIndices = scopeValue === "all"
+          ? groups.map(function (_g, idx) { return idx; })
+          : [Math.max(0, Math.min(groups.length - 1, Number(scopeValue) || 0))];
+        const fontFamily = 'Inter, "Pretendard", "Noto Sans KR", "Malgun Gothic", sans-serif';
+        const rolePalette = {
+          tank: { bg: "#f8eee9", fg: "#ad674a", short: "탱" },
+          dps: { bg: "#f5f0df", fg: "#9b7e31", short: "딜" },
+          healer: { bg: "#eaf2ec", fg: "#46694c", short: "힐" }
+        };
+
+        const W = 1080;
+        const PAD = 36;
+        const CW = W - PAD * 2;
+        const HEADER_H = 98;
+        const GROUP_H = 446;
+        const GROUP_GAP = 20;
+        const FOOTER_H = 34;
+        const totalH = PAD + HEADER_H + 18 + selectedIndices.length * GROUP_H + Math.max(0, selectedIndices.length - 1) * GROUP_GAP + 18 + FOOTER_H + 24;
+
+        const scale = 2;
+        const canvas = document.createElement("canvas");
+        canvas.width = W * scale;
+        canvas.height = totalH * scale;
+        const ctx = canvas.getContext("2d");
+        ctx.scale(scale, scale);
+
+        // Background
+        ctx.fillStyle = "#f5f6f2";
+        ctx.fillRect(0, 0, W, totalH);
+
+        // Gather summary stats across selected groups
+        const allSelectedMembers = [];
+        selectedIndices.forEach(function (gIdx) {
+          const group = groups[gIdx];
+          if (!group) return;
+          group.parties.forEach(function (party) {
+            party.forEach(function (id) {
+              const ch = id && getCharacter(id);
+              if (ch) allSelectedMembers.push(ch);
+            });
+          });
+        });
+        const totalCapacity = selectedIndices.length * 10;
+        const avgPowerAll = allSelectedMembers.length
+          ? Math.round(allSelectedMembers.reduce(function (sum, ch) { return sum + (Number(ch.power) || 0); }, 0) / allSelectedMembers.length)
+          : 0;
+
+        const dateInfo = formatExportDate();
+        const sectionName = SECTION_LABELS[activeSectionKey];
+        const titleText = scopeValue === "all"
+          ? sectionName + " 파티 편성표"
+          : sectionName + " · " + (selectedIndices[0] + 1) + "그룹 편성표";
+        const floorVal = currentSection().powerFloorK;
+        const floorText = floorVal ? "전투력 기준 " + floorVal + "K 이상" : "전투력 기준 제한 없음";
+
+        // Brand mark
+        fillStrokeRoundedRect(ctx, PAD, PAD + 6, 44, 44, 13, "#46694c", null);
+        ctx.fillStyle = "#ffffff";
+        ctx.font = "700 22px Georgia, serif";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText("A", PAD + 22, PAD + 29);
+
+        // Title block
+        ctx.textAlign = "left";
+        ctx.textBaseline = "alphabetic";
+        ctx.fillStyle = "#46694c";
+        ctx.font = "800 11px " + fontFamily;
+        ctx.fillText("AION 2 PARTY PLANNER · ATREIA", PAD + 58, PAD + 19);
+
+        ctx.fillStyle = "#20271f";
+        ctx.font = "800 26px " + fontFamily;
+        ctx.fillText(truncateCanvasText(ctx, titleText, 530), PAD + 58, PAD + 52);
+
+        ctx.fillStyle = "#737b70";
+        ctx.font = "600 12px " + fontFamily;
+        ctx.fillText(dateInfo.display + "  ·  " + floorText + "  ·  한 그룹당 계정 1캐릭터", PAD + 58, PAD + 78);
+
+        // Header summary cards (right aligned)
+        const summaryCards = [
+          { label: "대상 그룹", value: scopeValue === "all" ? selectedIndices.length + "개" : (selectedIndices[0] + 1) + "그룹" },
+          { label: "편성 인원", value: allSelectedMembers.length + " / " + totalCapacity + "명" },
+          { label: "평균 전투력", value: avgPowerAll ? formatPower(avgPowerAll) : "-" }
+        ];
+        const cardW = 114;
+        const cardH = 66;
+        const cardGap = 10;
+        const cardsStartX = W - PAD - (cardW * summaryCards.length + cardGap * (summaryCards.length - 1));
+        summaryCards.forEach(function (card, idx) {
+          const cx = cardsStartX + idx * (cardW + cardGap);
+          const cy = PAD + 12;
+          fillStrokeRoundedRect(ctx, cx, cy, cardW, cardH, 13, "#ffffff", "#e4e8df", 1);
+          ctx.fillStyle = "#737b70";
+          ctx.font = "600 11px " + fontFamily;
+          ctx.textAlign = "left";
+          ctx.textBaseline = "alphabetic";
+          ctx.fillText(card.label, cx + 13, cy + 25);
+          ctx.fillStyle = "#20271f";
+          ctx.font = "800 17px " + fontFamily;
+          ctx.fillText(truncateCanvasText(ctx, card.value, cardW - 24), cx + 13, cy + 50);
+        });
+
+        // Draw each group card
+        let cursorY = PAD + HEADER_H + 18;
+        selectedIndices.forEach(function (groupIndex) {
+          const group = groups[groupIndex];
+          const gx = PAD;
+          const gy = cursorY;
+
+          // Group container card
+          fillStrokeRoundedRect(ctx, gx, gy, CW, GROUP_H, 18, "#ffffff", "#e2e8de", 1);
+
+          const groupMembers = group.parties.reduce(function (all, party) { return all.concat(party.filter(Boolean)); }, []).map(getCharacter).filter(Boolean);
+          const groupMains = groupMembers.filter(function (ch) { return ch.isMain; }).length;
+          const groupAlts = groupMembers.length - groupMains;
+          const groupAvgPower = groupMembers.length
+            ? Math.round(groupMembers.reduce(function (sum, ch) { return sum + (Number(ch.power) || 0); }, 0) / groupMembers.length)
+            : 0;
+
+          // Group header
+          fillStrokeRoundedRect(ctx, gx + 20, gy + 18, 32, 32, 9, "#46694c", null);
+          ctx.fillStyle = "#ffffff";
+          ctx.font = "800 12px " + fontFamily;
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.fillText("G" + (groupIndex + 1), gx + 36, gy + 34.5);
+
+          ctx.textAlign = "left";
+          ctx.textBaseline = "alphabetic";
+          ctx.fillStyle = "#20271f";
+          ctx.font = "800 17px " + fontFamily;
+          ctx.fillText((groupIndex + 1) + "그룹", gx + 64, gy + 34);
+
+          ctx.fillStyle = "#737b70";
+          ctx.font = "600 11.5px " + fontFamily;
+          const groupMeta = "본캐 " + groupMains + "명 · 부캐 " + groupAlts + "명 · 총 " + groupMembers.length + "/10명" + (groupAvgPower ? " · 평균 전투력 " + formatPower(groupAvgPower) : "");
+          ctx.fillText(groupMeta, gx + 64, gy + 53);
+
+          // Two party cards side by side
+          const partyGap = 16;
+          const partyW = (CW - 40 - partyGap) / 2;
+          const partyY = gy + 68;
+          const partyH = 358;
+
+          [0, 1].forEach(function (partyIndex) {
+            const party = group.parties[partyIndex];
+            const px = gx + 20 + partyIndex * (partyW + partyGap);
+            fillStrokeRoundedRect(ctx, px, partyY, partyW, partyH, 14, "#fafcf9", "#e7ece4", 1);
+
+            const partyMembers = party.map(function (id) { return id && getCharacter(id); }).filter(Boolean);
+            const counts = roleCounts(party);
+            const partyAvgPower = partyMembers.length
+              ? Math.round(partyMembers.reduce(function (sum, ch) { return sum + (Number(ch.power) || 0); }, 0) / partyMembers.length)
+              : 0;
+
+            // Party header
+            fillStrokeRoundedRect(ctx, px + 16, partyY + 14, 26, 26, 8, "#edf4e9", "#d5e4d2", 1);
+            ctx.fillStyle = "#304f36";
+            ctx.font = "800 11px " + fontFamily;
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillText("0" + (partyIndex + 1), px + 29, partyY + 27.5);
+
+            ctx.textAlign = "left";
+            ctx.textBaseline = "middle";
+            ctx.fillStyle = "#20271f";
+            ctx.font = "800 15px " + fontFamily;
+            ctx.fillText((partyIndex + 1) + "파티", px + 50, partyY + 27.5);
+
+            // Right-aligned member count & role pills
+            let rightX = px + partyW - 16;
+            ctx.font = "700 11px " + fontFamily;
+            const statusText = partyMembers.length + " / 5";
+            const statusW = ctx.measureText(statusText).width;
+            ctx.fillStyle = "#737b70";
+            ctx.textAlign = "right";
+            ctx.textBaseline = "middle";
+            ctx.fillText(statusText, rightX, partyY + 27.5);
+            rightX -= statusW + 10;
+
+            ["healer", "dps", "tank"].forEach(function (roleKey) {
+              const pal = rolePalette[roleKey];
+              const label = pal.short + " " + counts[roleKey];
+              ctx.font = "700 10.5px " + fontFamily;
+              const pillW = Math.ceil(ctx.measureText(label).width + 14);
+              rightX -= pillW;
+              drawCanvasPill(ctx, rightX, partyY + 17, label, "700 10.5px " + fontFamily, pal.bg, pal.fg, 7, 21, 6);
+              rightX -= 5;
+            });
+
+            // 5 Slots
+            const slotX = px + 16;
+            const slotW = partyW - 32;
+            const slotH = 46;
+            const slotGap = 7;
+            const slotsStartY = partyY + 52;
+
+            for (let slotIndex = 0; slotIndex < 5; slotIndex += 1) {
+              const sy = slotsStartY + slotIndex * (slotH + slotGap);
+              const id = party[slotIndex];
+              const character = id && getCharacter(id);
+              const locked = Boolean(character && group.lockedSlots[partyIndex][slotIndex]);
+
+              if (!character) {
+                fillStrokeRoundedRect(ctx, slotX, sy, slotW, slotH, 10, "#fbfcfa", "#e2e8de", 1, true);
+                fillStrokeRoundedRect(ctx, slotX + 10, sy + 11, 24, 24, 7, "#f1f3ef", null);
+                ctx.fillStyle = "#8a9285";
+                ctx.font = "800 10.5px " + fontFamily;
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                ctx.fillText(String(slotIndex + 1), slotX + 22, sy + 23.5);
+
+                ctx.fillStyle = "#a8afa4";
+                ctx.font = "600 11.5px " + fontFamily;
+                ctx.textAlign = "left";
+                ctx.fillText("빈 자리", slotX + 44, sy + 23.5);
+                continue;
+              }
+
+              const role = ROLE_BY_JOB[character.job];
+              const pal = rolePalette[role];
+              const owner = accountForCharacter(character.id);
+              const layerIndex = owner ? owner.characters.findIndex(function (item) { return item.id === character.id; }) : 1;
+              const typeLabel = characterTypeLabel(character, layerIndex);
+
+              fillStrokeRoundedRect(ctx, slotX, sy, slotW, slotH, 10, locked ? "#f8fcf7" : "#ffffff", locked ? "#c6dac4" : "#e4e9e0", 1);
+
+              // Slot number badge tinted by role
+              fillStrokeRoundedRect(ctx, slotX + 10, sy + 11, 24, 24, 7, pal.bg, null);
+              ctx.fillStyle = pal.fg;
+              ctx.font = "800 10.5px " + fontFamily;
+              ctx.textAlign = "center";
+              ctx.textBaseline = "middle";
+              ctx.fillText(String(slotIndex + 1), slotX + 22, sy + 23.5);
+
+              // Right side: Combat power + Role tag
+              const powerText = formatPower(character.power);
+              ctx.font = "700 12.5px " + fontFamily;
+              const powerW = ctx.measureText(powerText).width;
+              ctx.fillStyle = "#3a4438";
+              ctx.textAlign = "right";
+              ctx.textBaseline = "middle";
+              ctx.fillText(powerText, slotX + slotW - 12, sy + 23.5);
+
+              const roleText = ROLE_LABEL[role];
+              ctx.font = "700 10px " + fontFamily;
+              const rolePillW = Math.ceil(ctx.measureText(roleText).width + 12);
+              const rolePillX = slotX + slotW - 12 - powerW - 9 - rolePillW;
+              drawCanvasPill(ctx, rolePillX, sy + 13, roleText, "700 10px " + fontFamily, pal.bg, pal.fg, 6, 20, 6);
+
+              // Left side: Name + Job tag + Main/Alt tag (guaranteed no collision with right side)
+              const nameStartX = slotX + 43;
+              const rightBoundary = rolePillX - 8;
+              ctx.font = "700 10.5px " + fontFamily;
+              const jobPillW = Math.ceil(ctx.measureText(character.job).width + 12);
+              ctx.font = "700 10px " + fontFamily;
+              const typePillW = Math.ceil(ctx.measureText(typeLabel).width + 12);
+              const maxNameW = Math.max(40, rightBoundary - nameStartX - jobPillW - typePillW - 12);
+
+              ctx.font = "800 13.5px " + fontFamily;
+              const drawnName = truncateCanvasText(ctx, character.name, maxNameW);
+              const drawnNameW = ctx.measureText(drawnName).width;
+              ctx.fillStyle = "#20271f";
+              ctx.textAlign = "left";
+              ctx.textBaseline = "middle";
+              ctx.fillText(drawnName, nameStartX, sy + 23.5);
+
+              const jobX = nameStartX + drawnNameW + 7;
+              drawCanvasPill(ctx, jobX, sy + 13, character.job, "700 10.5px " + fontFamily, "#f0f3ee", "#4d5747", 6, 20, 6);
+              drawCanvasPill(
+                ctx,
+                jobX + jobPillW + 5,
+                sy + 13,
+                typeLabel,
+                "700 10px " + fontFamily,
+                character.isMain ? "#fbf3e5" : "#f1f3ef",
+                character.isMain ? "#9a6b29" : "#697265",
+                6,
+                20,
+                6
+              );
+            }
+
+            // Party footer (avg combat power)
+            const footY = slotsStartY + 5 * slotH + 4 * slotGap + 11;
+            ctx.beginPath();
+            ctx.moveTo(px + 16, footY);
+            ctx.lineTo(px + partyW - 16, footY);
+            ctx.strokeStyle = "#eaeee7";
+            ctx.lineWidth = 1;
+            ctx.stroke();
+
+            ctx.textBaseline = "middle";
+            ctx.textAlign = "left";
+            ctx.fillStyle = "#7c8577";
+            ctx.font = "600 11px " + fontFamily;
+            ctx.fillText("파티 평균 전투력", px + 16, footY + 17);
+
+            ctx.textAlign = "right";
+            ctx.fillStyle = partyAvgPower ? "#304f36" : "#a1a89e";
+            ctx.font = "800 12px " + fontFamily;
+            ctx.fillText(partyAvgPower ? formatPower(partyAvgPower) : "-", px + partyW - 16, footY + 17);
+          });
+
+          cursorY += GROUP_H + GROUP_GAP;
+        });
+
+        // Footer
+        const bottomY = totalH - 24 - FOOTER_H;
+        ctx.beginPath();
+        ctx.moveTo(PAD, bottomY);
+        ctx.lineTo(W - PAD, bottomY);
+        ctx.strokeStyle = "#e2e7de";
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        ctx.fillStyle = "#8a9285";
+        ctx.font = "600 11px " + fontFamily;
+        ctx.textBaseline = "middle";
+        ctx.textAlign = "left";
+        ctx.fillText("아이온2 파티 메이커 · " + sectionName + " 편성 요약", PAD, bottomY + 20);
+        ctx.textAlign = "right";
+        ctx.fillText("PNG 공유 카드 · " + dateInfo.display, W - PAD, bottomY + 20);
+
+        const scopeSuffix = scopeValue === "all" ? "전체그룹" : (selectedIndices[0] + 1) + "그룹";
+        return {
+          canvas: canvas,
+          filename: "아이온2_" + sectionName + "_" + scopeSuffix + "_" + dateInfo.file + ".png",
+          memberCount: allSelectedMembers.length,
+          groupCount: selectedIndices.length
+        };
+      }
+
+      function canvasToPngBlob(canvas) {
+        return new Promise(function (resolve, reject) {
+          if (typeof canvas.toBlob === "function") {
+            canvas.toBlob(function (blob) {
+              if (blob) resolve(blob);
+              else reject(new Error("PNG 이미지를 생성하지 못했어요."));
+            }, "image/png");
+            return;
+          }
+          try {
+            const dataUrl = canvas.toDataURL("image/png");
+            const base64 = dataUrl.split(",")[1];
+            const bytes = base64UrlToBytes(base64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, ""));
+            resolve(new Blob([bytes], { type: "image/png" }));
+          } catch (error) {
+            reject(error);
+          }
+        });
+      }
+
+      function refreshImageExportPreview(scopeValue) {
+        const result = renderPartySummaryCanvas(scopeValue);
+        latestExportCanvas = result.canvas;
+        latestExportDataUrl = result.canvas.toDataURL("image/png");
+        latestExportFilename = result.filename;
+        document.getElementById("image-export-preview").src = latestExportDataUrl;
+        setTransferStatus(
+          "image-export-status",
+          result.groupCount + "개 그룹 · 편성 " + result.memberCount + "명 (" + result.canvas.width + "×" + result.canvas.height + "px 고해상도 PNG)",
+          "ok"
+        );
+      }
+
+      function openImageExportDialog(initialScope) {
+        syncAllGroups();
+        const groups = currentGroups();
+        const totalAssigned = groups.reduce(function (sum, group) {
+          return sum + group.parties.reduce(function (pSum, party) { return pSum + party.filter(Boolean).length; }, 0);
+        }, 0);
+        if (!totalAssigned) {
+          showToast("배치된 캐릭터가 없어요. 먼저 파티를 편성한 뒤 이미지를 만들어 보세요.");
+          return;
+        }
+        const scopeSelect = document.getElementById("image-export-scope");
+        const options = ['<option value="all">전체 그룹 (' + groups.length + '개)</option>'].concat(
+          groups.map(function (_group, index) { return '<option value="' + index + '">' + (index + 1) + '그룹만</option>'; })
+        );
+        scopeSelect.innerHTML = options.join("");
+        const chosenScope = initialScope && initialScope !== "all" && Number(initialScope) >= 0 && Number(initialScope) < groups.length
+          ? String(Number(initialScope))
+          : "all";
+        scopeSelect.value = chosenScope;
+        refreshImageExportPreview(chosenScope);
+        const dialog = document.getElementById("image-export-dialog");
+        if (typeof dialog.showModal === "function" && !dialog.open) {
+          dialog.showModal();
+        }
+      }
+
+      document.getElementById("open-image-export").addEventListener("click", function () { openImageExportDialog("all"); });
+      document.getElementById("close-image-export").addEventListener("click", function () { document.getElementById("image-export-dialog").close(); });
+      document.getElementById("cancel-image-export").addEventListener("click", function () { document.getElementById("image-export-dialog").close(); });
+      document.getElementById("image-export-scope").addEventListener("change", function (event) {
+        refreshImageExportPreview(event.target.value);
+      });
+      document.getElementById("download-party-png").addEventListener("click", function () {
+        if (!latestExportDataUrl) return;
+        const link = document.createElement("a");
+        link.href = latestExportDataUrl;
+        link.download = latestExportFilename || "아이온2_파티편성.png";
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        setTransferStatus("image-export-status", latestExportFilename + " 파일을 저장했어요.", "ok");
+        showToast("PNG 편성표 이미지를 저장했어요.");
+      });
+      document.getElementById("copy-party-png").addEventListener("click", async function () {
+        if (!latestExportCanvas) return;
+        if (!window.isSecureContext || !navigator.clipboard || typeof navigator.clipboard.write !== "function" || typeof window.ClipboardItem !== "function") {
+          setTransferStatus("image-export-status", "현재 환경에서는 이미지 직접 복사가 제한돼요. 'PNG 파일 저장'을 이용해 주세요.", "error");
+          showToast("PNG 파일 저장 버튼을 이용해 주세요.");
+          return;
+        }
+        try {
+          const blob = await canvasToPngBlob(latestExportCanvas);
+          await navigator.clipboard.write([new window.ClipboardItem({ "image/png": blob })]);
+          setTransferStatus("image-export-status", "이미지를 클립보드에 복사했어요! 카카오톡·디스코드에서 Ctrl+V로 바로 붙여넣으세요.", "ok");
+          showToast("파티 편성표 이미지를 클립보드에 복사했어요.");
+        } catch (error) {
+          setTransferStatus("image-export-status", "이미지 복사에 실패했어요. 'PNG 파일 저장'으로 다운로드해 공유해 주세요.", "error");
+          showToast("이미지 복사에 실패했어요. PNG 저장을 이용해 주세요.");
+        }
+      });
+
+      const TUTORIAL_STORAGE_KEY = "aion2-party-maker-tutorial-seen-v1";
+      const TUTORIAL_STEPS = [
+        {
+          tab: "1. 명단 등록",
+          badge: "STEP 01 · 캐릭터 & 던전",
+          title: "본캐와 부캐를 등록하면 그룹이 자동 생성돼요",
+          lead: "계정별로 본캐와 부캐(직업·전투력)를 입력하면, 캐릭터가 가장 많은 계정 수에 맞춰 1그룹·2그룹이 자동으로 만들어집니다.",
+          visual:
+            '<div class="tutorial-visual">' +
+              '<div class="tutorial-visual-row"><div class="tutorial-visual-left"><span>홍길동</span><span class="job-tag">검성</span><span class="type-tag main">본캐</span></div><span class="power">50,000</span></div>' +
+              '<div class="tutorial-visual-row"><div class="tutorial-visual-left"><span>홍길동부캐</span><span class="job-tag">치유성</span><span class="type-tag">부캐 1</span></div><span class="power">38,000</span></div>' +
+            '</div>',
+          points: [
+            "<b>무스펠 · 비탄</b> 탭은 서로 독립적으로 저장되며, 던전별 <b>최소 전투력(K)</b> 기준을 따로 설정할 수 있어요.",
+            "한 그룹(1·2파티 합산) 안에는 <b>같은 계정의 캐릭터 1명</b>만 배치되도록 자동 제한됩니다.",
+            "명단 왼쪽 체크박스를 해제하면 해당 캐릭터는 자동 편성 후보에서 제외됩니다."
+          ]
+        },
+        {
+          tab: "2. 수동 고정",
+          badge: "STEP 02 · 수동 배치 & 자동 편성",
+          title: "본캐를 먼저 직접 배치해도 자동 편성 시 유지돼요",
+          lead: "직업 밸런스나 전투력에 맞춰 먼저 넣고 싶은 캐릭터를 드래그(또는 ＋ 버튼)로 배치한 뒤 전체 자동 편성을 눌러 보세요.",
+          visual:
+            '<div class="tutorial-visual">' +
+              '<div class="tutorial-visual-row highlight"><div class="tutorial-visual-left"><span>1. 메인탱커</span><span class="job-tag">수호성</span><span class="type-tag main">본캐</span></div><span class="assignment-tag locked">고정 · 자동 편성 시 유지</span></div>' +
+              '<div class="tutorial-visual-row"><div class="tutorial-visual-left"><span>2~5. 남은 빈 자리</span><span class="job-tag">딜러 · 힐러</span></div><span class="assignment-tag">✦ 자동 편성으로 충원</span></div>' +
+            '</div>',
+          points: [
+            "직접 배치한 캐릭터는 자동으로 <b>고정</b> 상태가 되어 <b>전체 그룹 자동 편성</b>이나 <b>이 그룹 자동 편성</b>을 눌러도 초기화되지 않습니다.",
+            "슬롯 오른쪽의 <b>자물쇠(고정) 버튼</b>을 눌러 수동 고정을 해제하거나, 자동 배치된 캐릭터를 추가로 고정할 수 있어요.",
+            "<b>편성 설정</b>에서 파티별 탱커·딜러·힐러 수와 본캐 목표 수, 부캐 충원 여부를 자유롭게 바꿀 수 있습니다."
+          ]
+        },
+        {
+          tab: "3. 기기 동기화",
+          badge: "STEP 03 · 코드 저장 & 공유 링크",
+          title: "저장 코드와 공유 링크로 여러 기기에서 불러오세요",
+          lead: "입력한 명단과 편성은 현재 브라우저에 자동 저장되며, 다른 PC·모바일로 옮길 때는 상단 '⇄ 코드 저장 · 불러오기'를 사용하면 됩니다.",
+          visual:
+            '<div class="tutorial-visual">' +
+              '<div class="tutorial-visual-row highlight"><div class="tutorial-visual-left"><span>⇄ 저장 코드 복사</span><span class="job-tag">AION2Z:...</span></div><span class="assignment-tag locked">명단 + 편성 전체 저장</span></div>' +
+              '<div class="tutorial-visual-row"><div class="tutorial-visual-left"><span>공유 링크 복사</span><span class="job-tag">#data=...</span></div><span class="assignment-tag">링크 열면 바로 복원</span></div>' +
+            '</div>',
+          points: [
+            "<b>저장 코드 복사</b>로 코드를 메모·카톡에 보관해 두고, 다른 기기에서 붙여넣으면 명단과 편성이 그대로 복원됩니다.",
+            "<b>공유 링크 복사</b>로 링크를 보내면 상대방 브라우저에서 열자마자 바로 불러올 수 있어요.",
+            "편성은 비우고 캐릭터 목록만 가져오고 싶을 때는 <b>명단만 불러오기</b> 버튼을 누르세요."
+          ]
+        },
+        {
+          tab: "4. PNG 공유",
+          badge: "STEP 04 · 한눈에 보는 편성표 이미지",
+          title: "완성된 파티를 고해상도 PNG 사진으로 공유하세요",
+          lead: "편성이 끝나면 '🖼 PNG 공유'(전체 그룹) 또는 각 그룹의 'PNG' 버튼으로 깔끔한 요약 편성표 이미지를 만들 수 있어요.",
+          visual:
+            '<div class="tutorial-visual">' +
+              '<div class="tutorial-visual-row highlight"><div class="tutorial-visual-left"><span>🖼 PNG 파일 저장</span><span class="job-tag">2x 고해상도</span></div><span class="assignment-tag locked">모바일 · 보관용</span></div>' +
+              '<div class="tutorial-visual-row"><div class="tutorial-visual-left"><span>이미지 클립보드 복사</span><span class="job-tag">Ctrl + V</span></div><span class="assignment-tag">카톡 · 디스코드 즉시 붙여넣기</span></div>' +
+            '</div>',
+          points: [
+            "편집 버튼 없이 <b>던전명 · 그룹별 1·2파티 · 직업 · 본캐/부캐 · 역할 · 평균 전투력</b>만 한눈에 정리됩니다.",
+            "미리보기 창에서 <b>전체 그룹</b> 또는 <b>특정 그룹만</b> 골라 출력할 수 있어요.",
+            "PC에서는 <b>이미지 클립보드 복사</b> 후 카카오톡·디스코드 채팅창에 바로 <b>Ctrl+V</b>로 붙여넣으면 가장 편합니다."
+          ]
+        }
+      ];
+      let tutorialStepIndex = 0;
+
+      function renderTutorialStep() {
+        const step = TUTORIAL_STEPS[tutorialStepIndex] || TUTORIAL_STEPS[0];
+        document.getElementById("tutorial-steps-nav").innerHTML = TUTORIAL_STEPS.map(function (item, idx) {
+          const active = idx === tutorialStepIndex;
+          return '<button class="tutorial-step-tab' + (active ? ' active' : '') + '" type="button" role="tab" aria-selected="' + String(active) + '" data-tutorial-step="' + idx + '">' + safe(item.tab) + '</button>';
+        }).join("");
+        document.getElementById("tutorial-stage").innerHTML =
+          '<span class="tutorial-badge">' + safe(step.badge) + '</span>' +
+          '<h3>' + safe(step.title) + '</h3>' +
+          '<p class="tutorial-lead">' + safe(step.lead) + '</p>' +
+          step.visual +
+          '<ul class="tutorial-points">' + step.points.map(function (point) { return '<li>' + point + '</li>'; }).join("") + '</ul>';
+        const prevBtn = document.getElementById("tutorial-prev");
+        const nextBtn = document.getElementById("tutorial-next");
+        prevBtn.disabled = tutorialStepIndex === 0;
+        prevBtn.style.opacity = tutorialStepIndex === 0 ? "0.45" : "1";
+        nextBtn.textContent = tutorialStepIndex === TUTORIAL_STEPS.length - 1 ? "시작하기 ✓" : "다음 →";
+      }
+
+      function saveTutorialDismissPreference() {
+        const dontShow = document.getElementById("tutorial-dont-show");
+        try {
+          if (dontShow && dontShow.checked) localStorage.setItem(TUTORIAL_STORAGE_KEY, "1");
+          else localStorage.removeItem(TUTORIAL_STORAGE_KEY);
+        } catch (error) { /* Ignore storage restrictions. */ }
+      }
+
+      function openTutorialDialog(startIndex) {
+        tutorialStepIndex = Number.isInteger(startIndex) ? Math.max(0, Math.min(TUTORIAL_STEPS.length - 1, startIndex)) : 0;
+        let seen = false;
+        try { seen = localStorage.getItem(TUTORIAL_STORAGE_KEY) === "1"; }
+        catch (error) { seen = false; }
+        document.getElementById("tutorial-dont-show").checked = true;
+        renderTutorialStep();
+        const dialog = document.getElementById("tutorial-dialog");
+        if (typeof dialog.showModal === "function" && !dialog.open) {
+          dialog.showModal();
+        }
+        return seen;
+      }
+
+      function closeTutorialDialog() {
+        saveTutorialDismissPreference();
+        const dialog = document.getElementById("tutorial-dialog");
+        if (dialog && dialog.open) dialog.close();
+      }
+
+      function maybeOpenFirstVisitTutorial() {
+        const rawSource = (window.location && (window.location.hash || window.location.search)) || "";
+        if (rawSource.includes("data=")) return;
+        let seen = false;
+        try { seen = localStorage.getItem(TUTORIAL_STORAGE_KEY) === "1"; }
+        catch (error) { seen = false; }
+        if (!seen) openTutorialDialog(0);
+      }
+
+      document.getElementById("open-tutorial").addEventListener("click", function () { openTutorialDialog(0); });
+      document.getElementById("close-tutorial").addEventListener("click", closeTutorialDialog);
+      document.getElementById("tutorial-steps-nav").addEventListener("click", function (event) {
+        const tab = event.target.closest("[data-tutorial-step]");
+        if (!tab) return;
+        tutorialStepIndex = Number(tab.dataset.tutorialStep) || 0;
+        renderTutorialStep();
+      });
+      document.getElementById("tutorial-prev").addEventListener("click", function () {
+        if (tutorialStepIndex > 0) {
+          tutorialStepIndex -= 1;
+          renderTutorialStep();
+        }
+      });
+      document.getElementById("tutorial-next").addEventListener("click", function () {
+        if (tutorialStepIndex < TUTORIAL_STEPS.length - 1) {
+          tutorialStepIndex += 1;
+          renderTutorialStep();
+        } else {
+          closeTutorialDialog();
+        }
+      });
+      document.getElementById("tutorial-dialog").addEventListener("keydown", function (event) {
+        if (event.key === "ArrowRight" && tutorialStepIndex < TUTORIAL_STEPS.length - 1) {
+          tutorialStepIndex += 1;
+          renderTutorialStep();
+        } else if (event.key === "ArrowLeft" && tutorialStepIndex > 0) {
+          tutorialStepIndex -= 1;
+          renderTutorialStep();
+        }
+      });
+      document.getElementById("tutorial-dialog").addEventListener("cancel", function () {
+        saveTutorialDismissPreference();
+      });
+
       render();
       checkSharedLinkOnLoad();
+      maybeOpenFirstVisitTutorial();
     })();
   </script>
 </body>
