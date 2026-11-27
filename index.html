@@ -44,8 +44,8 @@
     .summary-label { display: block; margin-bottom: 5px; color: var(--muted); font-size: 12px; }
     .summary-value { font-size: 23px; font-weight: 800; letter-spacing: -.05em; }
     .summary-value small { margin-left: 2px; color: var(--muted); font-size: 12.5px; font-weight: 600; letter-spacing: 0; }
-    .layout { display: grid; grid-template-columns: minmax(340px, 410px) minmax(0, 1fr); align-items: stretch; gap: 20px; }
-    .left-column { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+    .layout { display: grid; grid-template-columns: minmax(340px, 410px) minmax(0, 1fr); align-items: start; gap: 20px; }
+    .left-column { display: grid; gap: 16px; min-width: 0; }
     .panel { border: 1px solid var(--line); border-radius: 18px; background: var(--paper); box-shadow: var(--shadow); }
     .panel-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 18px 20px 13px; }
     .panel-title { margin: 0; font-size: 17px; font-weight: 800; letter-spacing: -.025em; }
@@ -89,11 +89,11 @@
     .button.ghost-green { border-color: #dce8d8; background: var(--green-soft); color: var(--green-dark); }
     .button.small { min-height: 34px; padding: 0 11px; border-radius: 9px; font-size: 12px; }
     .button.danger { color: var(--red); }
-    .roster-panel { position: sticky; top: 16px; max-height: calc(100vh - 32px); display: flex; flex-direction: column; overflow: hidden; }
-    .roster-head { align-items: center; padding-bottom: 11px; flex: 0 0 auto; }
+    .roster-panel { overflow: hidden; }
+    .roster-head { align-items: center; padding-bottom: 11px; }
     .count-pill { display: inline-flex; align-items: center; justify-content: center; min-width: 32px; height: 27px; padding: 0 9px; border-radius: 8px; background: #f0f2ee; color: #616a5e; font-size: 12px; font-weight: 800; }
-    .roster-hint { flex: 0 0 auto; margin: 0 18px 11px; padding: 9px 11px; border-radius: 9px; background: #f6f8f4; color: var(--muted); font-size: 12px; line-height: 1.5; }
-    .roster-items { flex: 1 1 auto; min-height: 220px; display: grid; align-content: start; gap: 11px; overflow: auto; padding: 0 14px 16px; }
+    .roster-hint { margin: 0 18px 11px; padding: 9px 11px; border-radius: 9px; background: #f6f8f4; color: var(--muted); font-size: 12px; line-height: 1.5; }
+    .roster-items { display: grid; gap: 11px; max-height: 620px; overflow: auto; padding: 0 14px 16px; }
     .account-group { overflow: hidden; border: 1px solid #e7ece4; border-radius: 12px; background: #fff; }
     .account-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 9px 11px; border-bottom: 1px solid #f0f2ee; background: #fafbf9; }
     .account-name { display: flex; align-items: center; gap: 6px; min-width: 0; font-size: 13px; font-weight: 800; }
@@ -112,12 +112,15 @@
     .assignment-tag { display: inline-flex; align-items: center; min-height: 21px; padding: 0 7px; border-radius: 6px; background: #dcebd7; color: #3c6940; font-size: 10.5px; font-weight: 800; white-space: nowrap; }
     .assignment-tag.locked { background: #d5e6cf; color: var(--green-dark); }
     .character-row.dragging, .party-slot.dragging { opacity: .45; }
+    body.is-dragging-char, body.is-dragging-char * { user-select: none !important; cursor: grabbing !important; }
+    .party-slot[data-drag-char] { cursor: grab; }
+    .drag-ghost { position: fixed; z-index: 9999; left: 0; top: 0; pointer-events: none; display: inline-flex; align-items: center; gap: 7px; padding: 8px 12px; border: 1.5px solid var(--green); border-radius: 11px; background: rgba(255, 255, 255, .96); box-shadow: 0 14px 32px rgba(32, 39, 31, .22); color: var(--ink); font-size: 13px; font-weight: 800; white-space: nowrap; will-change: transform; }
     .candidate-check { width: 16px; height: 16px; margin: 0; accent-color: var(--green); cursor: pointer; }
     .character-main { display: flex; align-items: center; gap: 6px; min-width: 0; flex-wrap: wrap; }
     .character-name { max-width: 134px; overflow: hidden; font-size: 13px; font-weight: 800; text-overflow: ellipsis; white-space: nowrap; }
     .job-tag, .type-tag { display: inline-flex; align-items: center; gap: 4px; min-height: 23px; padding: 1px 7px; border-radius: 6px; background: #f0f3ee; color: #586251; font-size: 11.5px; font-weight: 700; white-space: nowrap; }
     .job-tag.has-icon { padding: 1px 7px 1px 5px; }
-    .job-icon { width: 17px; height: 17px; object-fit: contain; flex: 0 0 auto; display: inline-block; vertical-align: middle; }
+    .job-icon { width: 17px; height: 17px; object-fit: contain; flex: 0 0 auto; display: inline-block; vertical-align: middle; pointer-events: none; -webkit-user-drag: none; user-select: none; }
     .type-tag.main { background: var(--gold-soft); color: #9a6b29; }
     .group-index { display: inline-flex; align-items: center; min-height: 21px; padding: 0 6px; border-radius: 6px; background: #f1f4ee; color: #68765f; font-size: 10.5px; font-weight: 750; white-space: nowrap; }
     .power { flex: 0 0 auto; color: #747d70; font-size: 12px; font-variant-numeric: tabular-nums; }
@@ -298,7 +301,7 @@
       .summary { margin-top: 16px; }
       .summary-card { flex: 1; min-width: 0; }
       .layout { grid-template-columns: 1fr; }
-      .roster-panel { position: static; max-height: none; }
+      .left-column { grid-template-columns: 1fr; }
       .roster-items { max-height: 460px; }
       .planner { padding: 16px 14px; }
       .planner-actions { width: 100%; }
@@ -918,7 +921,7 @@
         const locked = location ? isSlotLocked(location.groupIndex, location.partyIndex, location.slotIndex) : false;
         const participation = location ? (location.groupIndex + 1) + '그룹 · ' + (location.partyIndex + 1) + '파티' : '';
         const isEditing = editingCharId === character.id;
-        return '<div class="character-row' + (location ? ' participating' : '') + '" draggable="true" data-id="' + safe(character.id) + '" aria-label="' + safe(character.name) + ', ' + safe(character.job) + ', 전투력 ' + safe(character.power) + (location ? (locked ? ', 수동 고정 참여 중' : ', 현재 던전 파티 참여 중') : '') + '">' +
+        return '<div class="character-row' + (location ? ' participating' : '') + '" data-drag-char="true" data-id="' + safe(character.id) + '" aria-label="' + safe(character.name) + ', ' + safe(character.job) + ', 전투력 ' + safe(character.power) + (location ? (locked ? ', 수동 고정 참여 중' : ', 현재 던전 파티 참여 중') : '') + '">' +
           '<input class="candidate-check" type="checkbox" data-action="candidate" data-id="' + safe(character.id) + '" ' + (character.candidate !== false ? "checked" : "") + ' aria-label="' + safe(character.name) + ' 자동 편성 후보 선택">' +
           '<div class="character-main"><span class="character-name" title="' + safe(character.name) + '">' + safe(character.name) + '</span>' + renderJobTag(character.job) + '<span class="type-tag ' + (character.isMain ? "main" : "") + '">' + type + '</span><span class="power">' + formatPower(character.power) + '</span>' + (location ? '<span class="assignment-tag' + (locked ? ' locked' : '') + '">' + (locked ? '고정 · ' : '참여 중 · ') + participation + '</span>' : '') + '</div>' +
           '<div class="roster-row-actions">' +
@@ -955,7 +958,7 @@
         const type = characterTypeLabel(character, layerIndex);
         const locked = isSlotLocked(groupIndex, partyIndex, slotIndex);
         const lockTitle = locked ? "수동 고정됨 · 클릭하면 자동 편성 시 재배치 허용" : "클릭하면 자동 편성 시 이 자리에 고정";
-        return '<div class="party-slot' + (locked ? ' locked' : '') + '" data-group="' + groupIndex + '" data-party="' + partyIndex + '" data-slot="' + slotIndex + '" draggable="true" data-id="' + safe(character.id) + '"><span class="slot-num">' + (slotIndex + 1) + '</span><div class="slot-copy"><div class="slot-filled"><span class="character-name" title="' + safe(character.name) + '">' + safe(character.name) + '</span>' + renderJobTag(character.job) + '<span class="type-tag ' + (character.isMain ? "main" : "") + '">' + type + '</span></div><div class="slot-details"><span class="role-chip ' + role + '">' + ROLE_LABEL[role] + '</span><span class="power">전투력 ' + formatPower(character.power) + '</span></div></div><div class="slot-actions"><button class="slot-lock' + (locked ? ' active' : '') + '" type="button" data-action="toggle-lock" data-group="' + groupIndex + '" data-party="' + partyIndex + '" data-slot="' + slotIndex + '" title="' + lockTitle + '" aria-label="' + safe(character.name) + (locked ? ' 배치 고정 해제' : ' 배치 고정') + '" aria-pressed="' + String(locked) + '">' + (locked ? LOCKED_ICON + '고정' : UNLOCKED_ICON) + '</button><button class="slot-x" type="button" data-action="remove" data-id="' + safe(character.id) + '" aria-label="파티에서 빼기">×</button></div></div>';
+        return '<div class="party-slot' + (locked ? ' locked' : '') + '" data-group="' + groupIndex + '" data-party="' + partyIndex + '" data-slot="' + slotIndex + '" data-drag-char="true" data-id="' + safe(character.id) + '"><span class="slot-num">' + (slotIndex + 1) + '</span><div class="slot-copy"><div class="slot-filled"><span class="character-name" title="' + safe(character.name) + '">' + safe(character.name) + '</span>' + renderJobTag(character.job) + '<span class="type-tag ' + (character.isMain ? "main" : "") + '">' + type + '</span></div><div class="slot-details"><span class="role-chip ' + role + '">' + ROLE_LABEL[role] + '</span><span class="power">전투력 ' + formatPower(character.power) + '</span></div></div><div class="slot-actions"><button class="slot-lock' + (locked ? ' active' : '') + '" type="button" data-action="toggle-lock" data-group="' + groupIndex + '" data-party="' + partyIndex + '" data-slot="' + slotIndex + '" title="' + lockTitle + '" aria-label="' + safe(character.name) + (locked ? ' 배치 고정 해제' : ' 배치 고정') + '" aria-pressed="' + String(locked) + '">' + (locked ? LOCKED_ICON + '고정' : UNLOCKED_ICON) + '</button><button class="slot-x" type="button" data-action="remove" data-id="' + safe(character.id) + '" aria-label="파티에서 빼기">×</button></div></div>';
       }
 
       function renderParty(party, groupIndex, partyIndex) {
@@ -1694,9 +1697,43 @@
         }
       }
 
-      let draggedId = null;
+      let activeDrag = null;
       let dragScrollVelocity = 0;
       let dragScrollRaf = 0;
+
+      function clearDropHighlights() {
+        document.querySelectorAll(".drag-over, .drop-target").forEach(function (node) {
+          node.classList.remove("drag-over", "drop-target");
+        });
+      }
+
+      function updateDropTargetAt(clientX, clientY) {
+        clearDropHighlights();
+        const target = document.elementFromPoint(clientX, clientY);
+        if (!target) return null;
+        const slot = target.closest(".party-slot");
+        if (slot) {
+          slot.classList.add("drop-target");
+          return { type: "slot", el: slot };
+        }
+        const card = target.closest(".party-card");
+        if (card) {
+          card.classList.add("drag-over");
+          return { type: "card", el: card };
+        }
+        const roster = target.closest("[data-roster-drop]");
+        if (roster) {
+          return { type: "roster", el: roster };
+        }
+        return null;
+      }
+
+      function positionDragGhost(ghost, clientX, clientY) {
+        if (!ghost) return;
+        const x = Math.min(window.innerWidth - 40, Math.max(8, clientX + 14));
+        const y = Math.min(window.innerHeight - 30, Math.max(8, clientY - 18));
+        ghost.style.transform = "translate3d(" + x + "px, " + y + "px, 0)";
+      }
 
       function stopDragAutoScroll() {
         dragScrollVelocity = 0;
@@ -1707,21 +1744,22 @@
       }
 
       function stepDragAutoScroll() {
-        if (!draggedId || !dragScrollVelocity) {
+        if (!activeDrag || !activeDrag.started || !dragScrollVelocity) {
           dragScrollRaf = 0;
           return;
         }
         window.scrollBy(0, dragScrollVelocity);
+        updateDropTargetAt(activeDrag.lastX, activeDrag.lastY);
         dragScrollRaf = window.requestAnimationFrame(stepDragAutoScroll);
       }
 
       function updateDragAutoScroll(clientY) {
-        if (!draggedId || !Number.isFinite(clientY) || clientY <= 0) {
+        if (!activeDrag || !activeDrag.started || !Number.isFinite(clientY)) {
           stopDragAutoScroll();
           return;
         }
-        const edge = Math.min(130, Math.max(70, Math.round(window.innerHeight * 0.16)));
-        const maxSpeed = 20;
+        const edge = Math.min(110, Math.max(64, Math.round(window.innerHeight * 0.13)));
+        const maxSpeed = 18;
         let nextVelocity = 0;
         if (clientY < edge) {
           const ratio = (edge - clientY) / edge;
@@ -1738,56 +1776,95 @@
         }
       }
 
+      function cleanupActiveDrag() {
+        stopDragAutoScroll();
+        if (activeDrag) {
+          if (activeDrag.sourceEl) activeDrag.sourceEl.classList.remove("dragging");
+          if (activeDrag.ghost) activeDrag.ghost.remove();
+        }
+        document.body.classList.remove("is-dragging-char");
+        clearDropHighlights();
+        activeDrag = null;
+      }
+
       document.addEventListener("dragstart", function (event) {
-        const item = event.target.closest("[data-id][draggable='true']");
-        if (!item) return;
-        draggedId = item.dataset.id;
-        item.classList.add("dragging");
-        if (event.dataTransfer) {
-          event.dataTransfer.effectAllowed = "move";
-          event.dataTransfer.setData("text/plain", draggedId);
+        if (event.target.closest("[data-drag-char]")) {
+          event.preventDefault();
         }
       });
-      document.addEventListener("dragend", function (event) {
-        stopDragAutoScroll();
-        draggedId = null;
-        const item = event.target.closest(".character-row, .party-slot");
-        if (item) item.classList.remove("dragging");
-        document.querySelectorAll(".drag-over, .drop-target").forEach(function (node) { node.classList.remove("drag-over", "drop-target"); });
+
+      document.addEventListener("pointerdown", function (event) {
+        if (event.pointerType === "mouse" && event.button !== 0) return;
+        if (event.target.closest("button, input, select, textarea, a, label, .inline-char-form")) return;
+        const sourceEl = event.target.closest("[data-drag-char][data-id]");
+        if (!sourceEl) return;
+        activeDrag = {
+          id: sourceEl.dataset.id,
+          sourceEl: sourceEl,
+          pointerId: event.pointerId,
+          startX: event.clientX,
+          startY: event.clientY,
+          lastX: event.clientX,
+          lastY: event.clientY,
+          started: false,
+          ghost: null
+        };
       });
-      document.addEventListener("dragover", function (event) {
-        if (draggedId) {
-          updateDragAutoScroll(event.clientY);
+
+      window.addEventListener("pointermove", function (event) {
+        if (!activeDrag || event.pointerId !== activeDrag.pointerId) return;
+        activeDrag.lastX = event.clientX;
+        activeDrag.lastY = event.clientY;
+        if (!activeDrag.started) {
+          if (Math.hypot(event.clientX - activeDrag.startX, event.clientY - activeDrag.startY) < 5) return;
+          const character = getCharacter(activeDrag.id);
+          if (!character) { cleanupActiveDrag(); return; }
+          activeDrag.started = true;
+          activeDrag.sourceEl.classList.add("dragging");
+          document.body.classList.add("is-dragging-char");
+          const ghost = document.createElement("div");
+          ghost.className = "drag-ghost";
+          ghost.innerHTML = '<span>' + safe(character.name) + '</span>' + renderJobTag(character.job) + '<span class="power">' + formatPower(character.power) + '</span>';
+          document.body.appendChild(ghost);
+          activeDrag.ghost = ghost;
         }
-        const slot = event.target.closest(".party-slot");
-        const card = event.target.closest(".party-card");
-        const roster = event.target.closest("[data-roster-drop]");
-        if (!slot && !card && !roster) return;
+        positionDragGhost(activeDrag.ghost, event.clientX, event.clientY);
+        updateDropTargetAt(event.clientX, event.clientY);
+        updateDragAutoScroll(event.clientY);
+      });
+
+      window.addEventListener("wheel", function (event) {
+        if (!activeDrag || !activeDrag.started) return;
+        const deltaY = event.deltaMode === 1 ? event.deltaY * 32 : (event.deltaMode === 2 ? event.deltaY * window.innerHeight : event.deltaY);
+        if (!deltaY) return;
         event.preventDefault();
-        if (slot) slot.classList.add("drop-target");
-        else if (card) card.classList.add("drag-over");
-      });
-      document.addEventListener("dragleave", function (event) {
-        const zone = event.target.closest(".party-slot, .party-card");
-        if (zone && !zone.contains(event.relatedTarget)) zone.classList.remove("drop-target", "drag-over");
-      });
-      document.addEventListener("drop", function (event) {
-        stopDragAutoScroll();
-        const slot = event.target.closest(".party-slot");
-        const card = event.target.closest(".party-card");
-        const roster = event.target.closest("[data-roster-drop]");
-        if (!slot && !card && !roster) {
-          draggedId = null;
+        window.scrollBy(0, deltaY);
+        updateDropTargetAt(activeDrag.lastX, activeDrag.lastY);
+      }, { passive: false });
+
+      window.addEventListener("pointerup", function (event) {
+        if (!activeDrag || event.pointerId !== activeDrag.pointerId) return;
+        const drag = activeDrag;
+        if (!drag.started) {
+          activeDrag = null;
           return;
         }
-        event.preventDefault();
-        const id = (event.dataTransfer && event.dataTransfer.getData("text/plain")) || draggedId;
-        draggedId = null;
-        document.querySelectorAll(".drag-over, .drop-target").forEach(function (node) { node.classList.remove("drag-over", "drop-target"); });
-        if (!id) return;
-        if (slot) assignCharacter(id, Number(slot.dataset.group), Number(slot.dataset.party), Number(slot.dataset.slot));
-        else if (card) assignCharacter(id, Number(card.dataset.groupCard), Number(card.dataset.partyCard), -1);
-        else removeFromParty(id);
+        const hit = updateDropTargetAt(event.clientX, event.clientY);
+        cleanupActiveDrag();
+        if (!hit) return;
+        if (hit.type === "slot") {
+          assignCharacter(drag.id, Number(hit.el.dataset.group), Number(hit.el.dataset.party), Number(hit.el.dataset.slot));
+        } else if (hit.type === "card") {
+          assignCharacter(drag.id, Number(hit.el.dataset.groupCard), Number(hit.el.dataset.partyCard), -1);
+        } else if (hit.type === "roster") {
+          removeFromParty(drag.id);
+        }
+      });
+
+      window.addEventListener("pointercancel", cleanupActiveDrag);
+      window.addEventListener("blur", cleanupActiveDrag);
+      document.addEventListener("keydown", function (event) {
+        if (event.key === "Escape" && activeDrag) cleanupActiveDrag();
       });
 
       function bytesToBase64Url(bytes) {
